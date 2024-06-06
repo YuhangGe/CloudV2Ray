@@ -56,6 +56,7 @@ pub fn run() {
       tauri_generate_uuid,
       tauri_test,
     ])
+    .plugin(tauri_plugin_shell::init())
     .setup(|_| {
       // tauri::async_runtime::spawn(async move {
 

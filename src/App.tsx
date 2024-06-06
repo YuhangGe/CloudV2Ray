@@ -38,8 +38,8 @@ function App() {
     >
       <AntApp className='flex size-full overflow-hidden bg-background'>
         <MessageWrapper />
-        <div className='flex w-1/5 flex-shrink-0 flex-col border-r border-solid border-border'>
-          <div className='pb-3 pl-6 pt-5 text-3xl'>V2RAY</div>
+        <div className='flex w-32 flex-shrink-0 flex-col border-r border-solid border-border'>
+          <div className='pb-3 pl-4 pt-5 text-3xl'>V2RAY</div>
           {ViewItems.map((item) => (
             <div
               key={item.key}
@@ -47,7 +47,7 @@ function App() {
                 setView(item.key);
               }}
               className={cs(
-                'w-full cursor-pointer px-6 py-4 text-lg hover:bg-hover hover:text-white',
+                'w-full cursor-pointer pl-5 py-4 text-lg hover:bg-hover hover:text-white',
                 view === item.key && 'text-blue',
               )}
             >

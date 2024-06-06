@@ -8,6 +8,7 @@ import { Control } from './Control';
 import { globalStore } from '@/store/global';
 
 import { RegionOptions } from '@/service/region';
+import { invoke } from '@tauri-apps/api/core';
 
 const regionNameMap = Object.fromEntries(RegionOptions.map((r) => [r.value, r.label]));
 
@@ -21,27 +22,8 @@ export const OverviewView: FC = () => {
     }
   };
   const test = async () => {
-    // `binaries/my-sidecar` is the EXACT value specified on `tauri.conf.json > tauri > bundle > externalBin`
-    const cmd = Command.create('pwd');
-    cmd.stdout.on('data', (msg) => {
-      console.log('[v2ray] ==>', msg);
-    });
-    cmd.stderr.on('data', (msg) => {
-      console.error(msg);
-    });
-    cmd.on('error', (err) => {
-      console.error(err);
-      killV2rayProcess();
-    });
-    cmd.on('close', () => {
-      killV2rayProcess();
-    });
-    try {
-      const process = await cmd.spawn();
-      v2rayProcess.current = process;
-    } catch (ex) {
-      console.error(ex);
-    }
+    await invoke('tauri_test');
+    return;
   };
   useEffect(() => {
     return () => {

@@ -11,7 +11,7 @@
   "app": {
     "windows": [
       {
-        "title": "CloudV2Ray",
+        "title": "CloudV2Ray - 基于云计算的 V2Ray 客户端",
         "width": 800,
         "height": 600,
         "resizable": true,
