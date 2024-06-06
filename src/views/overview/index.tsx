@@ -1,35 +1,34 @@
-import { useEffect, useRef, type FC } from 'react';
-import { Button, Tag } from 'antd';
-import type { Child } from '@tauri-apps/plugin-shell';
-import { Command } from '@tauri-apps/plugin-shell';
+import { useState, type FC } from 'react';
+import { App, Button, Tag } from 'antd';
+import { invoke } from '@tauri-apps/api/core';
 import { Price } from './Price';
 import { Instance } from './Instance';
 import { Control } from './Control';
 import { globalStore } from '@/store/global';
 
 import { RegionOptions } from '@/service/region';
-import { invoke } from '@tauri-apps/api/core';
 
 const regionNameMap = Object.fromEntries(RegionOptions.map((r) => [r.value, r.label]));
 
 export const OverviewView: FC = () => {
   const [settings] = globalStore.useStore('settings');
-  const v2rayProcess = useRef<Child>();
-  const killV2rayProcess = () => {
-    if (v2rayProcess.current) {
-      v2rayProcess.current.kill();
-      v2rayProcess.current = undefined;
-    }
-  };
+  const { message } = App.useApp();
+
   const test = async () => {
     await invoke('tauri_test');
     return;
   };
-  useEffect(() => {
-    return () => {
-      killV2rayProcess();
-    };
-  }, []);
+  const [tt, setTt] = useState(false);
+  const test2 = async () => {
+    setTt(true);
+    try {
+      await invoke('tauri_start_v2ray');
+    } catch (ex) {
+      void message.error(`${ex}`);
+    }
+    setTt(false);
+  };
+
   return (
     <div className='relative flex-1 overflow-x-hidden px-6 pt-5'>
       <div className='mb-7 mr-4 mt-1 text-2xl font-medium'>概览</div>
@@ -49,8 +48,11 @@ export const OverviewView: FC = () => {
         <div className='text-lg'>主机信息</div>
         <Instance />
         <Control />
-        <div>
+        <div className='flex gap-2'>
           <Button onClick={() => test()}>TEST</Button>
+          <Button loading={tt} onClick={() => test2()}>
+            TEST2
+          </Button>
         </div>
       </div>
     </div>

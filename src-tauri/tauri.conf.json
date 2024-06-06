@@ -32,7 +32,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": ["resources/v2ray-x86_64-pc-windows-msvc.zip"]
+    "resources": [
+      "resources/v2ray-x86_64-pc-windows-msvc.zip",
+      "resources/v2ray-aarch64-apple-darwin.zip"
+    ]
   },
   "$schema": "../node_modules/@tauri-apps/cli/schema.json"
 }
