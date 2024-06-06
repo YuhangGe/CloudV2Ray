@@ -64,11 +64,11 @@ async fn test2(handle: AppHandle) -> anyhow::Result<String> {
   println!("pid: {}", pid);
   let stdo = proc.stdout.as_mut().unwrap();
   // let mut buffer = Vec::<u8>::with_capacity(10);
-
   let reader = tokio::io::BufReader::new(stdo);
   let mut lines_reader = reader.lines();
   while let Some(l) = lines_reader.next_line().await? {
     println!("Got: {}", l);
+    handle.emit("v2ray::log", l)?;
   }
 
   Ok(format!("{{ pid: {} }}", pid))

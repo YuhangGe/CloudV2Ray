@@ -1,6 +1,8 @@
-import { useState, type FC } from 'react';
+import { useEffect, useRef, useState, type FC } from 'react';
 import { App, Button, Tag } from 'antd';
 import { invoke } from '@tauri-apps/api/core';
+import type { UnlistenFn } from '@tauri-apps/api/event';
+import { listen } from '@tauri-apps/api/event';
 import { Price } from './Price';
 import { Instance } from './Instance';
 import { Control } from './Control';
@@ -13,6 +15,7 @@ const regionNameMap = Object.fromEntries(RegionOptions.map((r) => [r.value, r.la
 export const OverviewView: FC = () => {
   const [settings] = globalStore.useStore('settings');
   const { message } = App.useApp();
+  const el = useRef<HTMLPreElement>(null);
 
   const test = async () => {
     await invoke('tauri_test');
@@ -29,10 +32,28 @@ export const OverviewView: FC = () => {
     setTt(false);
   };
 
+  useEffect(() => {
+    let unlisten: UnlistenFn;
+    void listen('v2ray::log', (ev) => {
+      if (!el.current) return;
+      // console.log(ev);
+      const $p = document.createElement('p');
+      $p.innerText = ev.payload as string;
+      el.current.appendChild($p);
+    }).then((fn) => {
+      unlisten = fn;
+    });
+    return () => {
+      unlisten?.();
+    };
+  }, []);
+
   return (
     <div className='relative flex-1 overflow-x-hidden px-6 pt-5'>
       <div className='mb-7 mr-4 mt-1 text-2xl font-medium'>概览</div>
-
+      <div>
+        <pre ref={el}></pre>
+      </div>
       <div className='flex flex-col gap-4'>
         <div className='text-lg'>配置信息</div>
         <div className='flex items-center gap-2'>
