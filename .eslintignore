@@ -1,0 +1,10 @@
+node_modules
+/.tmp
+/.idea
+/.vscode
+/.git
+dist
+compiler/template/parser
+lib/
+types/
+**/.DS_Store
