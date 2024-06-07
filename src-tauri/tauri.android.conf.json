@@ -1,0 +1,6 @@
+{
+  "bundle": {
+    "resources": ["resources/v2ray-android-arm64.zip"]
+  },
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json"
+}

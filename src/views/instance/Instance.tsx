@@ -32,7 +32,9 @@ export const Instance: FC = () => {
     }
   };
   useEffect(() => {
-    void loadInst();
+    if (!globalStore.get('instance')) {
+      void loadInst();
+    }
   }, []);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export const Instance: FC = () => {
   return (
     <>
       <div className='flex items-center gap-2'>
-        当前主机：
+        <span className='whitespace-nowrap'>当前主机：</span>
         <div className='min-w-[131px]'>
           {!inst && !loading && <span className='text-secondary-text'>未创建</span>}
           {inst && <span className='font-medium'>{inst.InstanceName}</span>}
@@ -61,7 +63,7 @@ export const Instance: FC = () => {
           onClick={() => {
             void loadInst();
           }}
-          className='ml-6'
+          className='translate-y-[1.5px]'
           icon={<span className='icon-[ant-design--reload-outlined]'></span>}
           size='small'
           type='link'
@@ -70,11 +72,11 @@ export const Instance: FC = () => {
       {inst && (
         <>
           <div className='flex items-center gap-2'>
-            主机状态：
+            <span className='whitespace-nowrap'>主机状态：</span>
             <Tag>{inst.InstanceState}</Tag>
           </div>
           <div className='flex items-center gap-2'>
-            公网地址：
+            <span className='whitespace-nowrap'>公网地址：</span>
             <Tag>{inst.PublicIpAddresses?.[0] || '-'}</Tag>
           </div>
         </>

@@ -23,16 +23,18 @@ export const Price: FC = () => {
 
   return (
     <div className='flex items-center gap-2'>
-      当前价格：
+      <span className='whitespace-nowrap'>当前价格：</span>
       {price && (
         <>
-          <span>¥{price.InstancePrice.UnitPriceDiscount.toFixed(2)}/小时</span>
-          <span>¥{price.BandwidthPrice.UnitPriceDiscount}/GB</span>
+          <span className='whitespace-nowrap'>
+            ¥{price.InstancePrice.UnitPriceDiscount.toFixed(2)}/小时
+          </span>
+          <span className='whitespace-nowrap'>¥{price.BandwidthPrice.UnitPriceDiscount}/GB</span>
         </>
       )}
       <Button
-        className='ml-6'
         loading={loading}
+        className='relative translate-y-[1.5px]'
         onClick={() => {
           void loadPrice();
         }}

@@ -3,21 +3,14 @@ use std::io::Cursor;
 use anyhow::Ok;
 use anyhow_tauri::{IntoTAResult, TAResult};
 use tauri::{AppHandle, Manager};
-use tokio::{
-  io::{self, AsyncBufReadExt, AsyncReadExt},
-  net::unix::pipe,
-};
+use tokio::io::{self, AsyncBufReadExt, AsyncReadExt};
+
+use crate::util::get_platform_zip_file;
 
 async fn test(handle: AppHandle) -> anyhow::Result<String> {
   let resource_path = handle.path().resource_dir()?;
   println!("{:?}", resource_path);
-  let zip_file: &str = if cfg!(all(target_arch = "x86_64", target_os = "windows")) {
-    "resources/v2ray-x86_64-pc-windows-msvc.zip"
-  } else if cfg!(all(target_arch = "aarch64", target_os = "macos")) {
-    "resources/v2ray-aarch64-apple-darwin.zip"
-  } else {
-    ""
-  };
+  let zip_file: &str = get_platform_zip_file();
   let zip_file_path = resource_path.join(zip_file);
   println!("{:?}", zip_file_path);
   let buf = std::fs::read(&zip_file_path)?;
@@ -68,44 +61,10 @@ async fn test2(handle: AppHandle) -> anyhow::Result<String> {
   let mut lines_reader = reader.lines();
   while let Some(l) = lines_reader.next_line().await? {
     println!("Got: {}", l);
-    handle.emit("v2ray::log", l)?;
+    handle.emit("log::v2ray", l)?;
   }
 
   Ok(format!("{{ pid: {} }}", pid))
-
-  // use tauri_plugin_shell::ShellExt;
-  // let shell = handle.shell();
-
-  // let output = shell
-  //   .command("echo")
-  //   .args(["Hello from Rust!"])
-  //   .output()
-  //   .await
-  //   .unwrap();
-  // if output.status.success() {
-  //   println!("Result: {:?}", String::from_utf8(output.stdout));
-  // } else {
-  //   println!("Exit with code: {}", output.status.code().unwrap());
-  // }
-  // println!("{:?}", v2ray_bin);
-
-  // let command = handle.shell().command("pwd").current_dir(v2ray_path);
-
-  // let oo = command.output().await?;
-  // println!("{}", String::from_utf8(oo.stdout).unwrap());
-  // let (mut rx, proc) = command.spawn()?;
-  // println!("pid: {}", proc.pid());
-  // while let Some(event) = rx.recv().await {
-  //   match event {
-  //     CommandEvent::Terminated(_) => break,
-  //     CommandEvent::Stdout(x) => {
-  //       let msg = String::from_utf8(x)?;
-  //       println!("{}", msg);
-  //     }
-  //     _ => (),
-  //   }
-  // }
-  // Ok("yy".into())
 }
 
 #[tauri::command]

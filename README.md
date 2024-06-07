@@ -47,6 +47,24 @@
 
 竞价实例可能被回收。如果发现科学网络中断了，可在`概览`页刷新下实例信息（会变回无实例），然后重新执行第 6 步。
 
+## 截图
+
+<p align='center'>
+  <img src="https://github.com/YuhangGe/CloudV2Ray/blob/main/screenshots/a.png?raw=true" alt='Overview'>
+</p>
+
+<p align='center'>
+  <img src="https://github.com/YuhangGe/CloudV2Ray/blob/main/screenshots/b.png?raw=true" alt='Instance'>
+</p>
+
+<p align='center'>
+  <img src="https://github.com/YuhangGe/CloudV2Ray/blob/main/screenshots/c.png?raw=true" alt='Settings'>
+</p>
+
+<p align='center'>
+  <img src="https://github.com/YuhangGe/CloudV2Ray/blob/main/screenshots/d.png?raw=true" alt='Logs'>
+</p>
+
 ## Todos
 
 - 支持在 GUI 界面启用系统代理。

@@ -1,10 +1,10 @@
 import { Button } from 'antd';
 import { useEffect, useRef, useState, type FC } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 import { getInstanceAgentShell } from '@/service/instance';
 import type { CVMInstance } from '@/service/tencent';
 import { CreateCommand, DescribeCommands, InvokeCommand, ModifyCommand } from '@/service/tencent';
 import { globalStore } from '@/store/global';
-import { message } from '@/service/message';
 
 async function createOrUpdateCommand(shellContent: string) {
   const [e0, r1] = await DescribeCommands({
@@ -37,24 +37,18 @@ async function ping(inst: CVMInstance) {
   const ip = inst.PublicIpAddresses?.[0];
   if (!ip) return false;
   try {
-    const res = await fetch(`http://${ip}:2081/ping`, {
-      headers: {
-        'X-Token': settings.token,
-      },
+    const res = await invoke('tauri_ping_v2ray_once', {
+      url: `http://${ip}:2081/ping?token=${settings.token}`,
+      token: settings.token,
     });
-    if (res.status !== 200) {
-      return false;
-    }
-    const text = await res.text();
-    // console.log(text);
-    return text === 'pong!';
+    return res === 'pong!';
   } catch (ex) {
-    void message.error(`${ex}`);
+    console.error(ex);
     return false;
   }
 }
 export const Install: FC<{ instance: CVMInstance }> = ({ instance }) => {
-  const [pinged, setPinged] = useState(true);
+  const [pinged, setPinged] = useState(false);
   const tick = useRef(0);
   useEffect(() => {
     void ping(instance).then((pinged) => {
@@ -93,6 +87,28 @@ export const Install: FC<{ instance: CVMInstance }> = ({ instance }) => {
     }
   };
 
+  // useEffect(() => {
+  //   if (pinged) {
+  //     const int = setInterval(
+  //       () => {
+  //         void ping(instance).then((pinged) => {
+  //           if (pinged) {
+  //             appendLog('[ping] ==> 服务器正常响应');
+  //           } else {
+  //             const msg =
+  //               '[ping] ==> 服务器响应异常，可能是竞价实例被回收，请刷新主机信息后重新购买';
+  //             void message.error(msg);
+  //             appendLog(msg);
+  //           }
+  //         });
+  //       },
+  //       2000,
+  //       2 * 60 * 1000,
+  //     );
+  //     return () => clearInterval(int);
+  //   }
+  // }, [pinged]);
+
   return (
     <Button
       disabled={pinged}
@@ -103,7 +119,7 @@ export const Install: FC<{ instance: CVMInstance }> = ({ instance }) => {
       className='text-xs'
       size='small'
     >
-      安装 V2Ray
+      {pinged ? '已' : ''}安装 V2Ray
     </Button>
   );
 };

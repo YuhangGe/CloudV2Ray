@@ -1,23 +1,18 @@
 import { ConfigProvider, App as AntApp, theme as AntTheme } from 'antd';
 import { useEffect, useState } from 'react';
 import type { Locale as AntLocale } from 'antd/es/locale';
-import { OverviewView } from './views/overview';
+import { invoke } from '@tauri-apps/api/core';
 import { themeStore } from './store/theme';
 import { loadAntdLocale, localeStore } from './store/locale';
-import { cs, useQuery } from './service/util';
-import { SettingsView } from './views/settings';
 import { MessageWrapper } from './service/message';
+import { Layout } from './Layout';
+import { useLogListen } from './views/logview/listen';
+import { DescribeInstances } from './service/tencent';
+import { globalStore } from './store/global';
+import { renderTpl } from './service/util';
+import { appendLog } from './store/log';
+import configTpl from '@/assets/v2ray.conf.template.json?raw';
 
-const ViewItems = [
-  {
-    label: '概览',
-    key: 'overview',
-  },
-  {
-    label: '设置',
-    key: 'settings',
-  },
-];
 function App() {
   const [locale] = localeStore.useStore('currentLanguage');
   const [antdLocale, setAntdLocale] = useState<AntLocale>();
@@ -27,7 +22,43 @@ function App() {
     void loadAntdLocale(locale).then((res) => setAntdLocale(res));
   }, [locale]);
 
-  const [view, setView] = useQuery('view', 'overview');
+  useLogListen();
+  const initialize = async () => {
+    const settings = globalStore.get('settings');
+    if (!settings.secretKey || !settings.instanceType) return;
+
+    const [err, res] = await DescribeInstances({
+      Filters: [
+        {
+          Name: 'instance-name',
+          Values: [settings.resourceName],
+        },
+      ],
+    });
+    if (err || !res.InstanceSet.length) return;
+    const inst = res.InstanceSet[0];
+    globalStore.set('instance', res.InstanceSet[0]);
+    const ip = inst.PublicIpAddresses?.[0];
+    if (!ip) return;
+    const url = `http://${ip}:2081/ping?token=${settings.token}`;
+    const x = await invoke('tauri_ping_v2ray_once', {
+      url,
+    });
+    if (x !== 'pong!') {
+      return;
+    }
+    appendLog('[ping] ==> 开始定时 Ping 服务');
+    await invoke('tauri_ping_v2ray_interval', { url });
+    await invoke('tauri_start_v2ray_server', {
+      config: renderTpl(configTpl, {
+        REMOTE_IP: ip,
+        TOKEN: settings.token,
+      }),
+    });
+  };
+  useEffect(() => {
+    void initialize();
+  }, []);
 
   return antdLocale ? (
     <ConfigProvider
@@ -38,25 +69,7 @@ function App() {
     >
       <AntApp className='flex size-full overflow-hidden bg-background'>
         <MessageWrapper />
-        <div className='flex w-32 flex-shrink-0 flex-col border-r border-solid border-border'>
-          <div className='pb-3 pl-4 pt-5 text-3xl'>V2RAY</div>
-          {ViewItems.map((item) => (
-            <div
-              key={item.key}
-              onClick={() => {
-                setView(item.key);
-              }}
-              className={cs(
-                'w-full cursor-pointer pl-5 py-4 text-lg hover:bg-hover hover:text-white',
-                view === item.key && 'text-blue',
-              )}
-            >
-              {item.label}
-            </div>
-          ))}
-        </div>
-        {view === 'overview' && <OverviewView />}
-        {view === 'settings' && <SettingsView />}
+        <Layout />
       </AntApp>
     </ConfigProvider>
   ) : null;
