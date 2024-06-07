@@ -120,6 +120,25 @@ export const SettingsView: FC = () => {
   //   [],
   // );
 
+  const resetToken = () =>
+    invoke('tauri_generate_uuid').then(
+      (id) => {
+        form.setFieldValue('token', id);
+      },
+      (err) => {
+        void message.error(`${err}`);
+      },
+    );
+  const resetPwd = () => form.setFieldValue('loginPwd', generateStrongPassword());
+
+  useEffect(() => {
+    if (!settings.token) {
+      void resetToken();
+    }
+    if (!settings.loginPwd) {
+      resetPwd();
+    }
+  }, []);
   return (
     <div className='flex flex-1 flex-col overflow-x-hidden px-6 pt-6'>
       <div className='mb-4 flex items-center'>
@@ -168,17 +187,11 @@ export const SettingsView: FC = () => {
         </Form.Item>
         <Form.Item label='令牌' name='token' required rules={[{ required: true }]}>
           <Input
+            readOnly
             addonAfter={
               <Button
                 onClick={() => {
-                  invoke('tauri_generate_uuid').then(
-                    (id) => {
-                      form.setFieldValue('token', id);
-                    },
-                    (err) => {
-                      void message.error(`${err}`);
-                    },
-                  );
+                  void resetToken();
                 }}
                 size='small'
                 type='text'
@@ -190,10 +203,11 @@ export const SettingsView: FC = () => {
         </Form.Item>
         <Form.Item label='登录密码' name='loginPwd' required rules={[{ required: true }]}>
           <Input
+            readOnly
             addonAfter={
               <Button
                 onClick={() => {
-                  form.setFieldValue('loginPwd', generateStrongPassword());
+                  resetPwd();
                 }}
                 size='small'
                 type='text'

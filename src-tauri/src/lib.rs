@@ -1,6 +1,7 @@
 mod tencent;
 mod test;
 mod util;
+mod v2ray;
 
 use tencent::{
   tauri_call_tencent_cvm_api, tauri_call_tencent_tat_api, tauri_call_tencent_vpc_api,
@@ -9,6 +10,7 @@ use tencent::{
 use test::tauri_start_v2ray;
 use test::tauri_test;
 use util::tauri_generate_uuid;
+use v2ray::tauri_ping_v2ray_agent;
 
 // const TRAY_MENU_QUIT: &str = "quit";
 // const TRAY_MENU_SETTING: &str = "setting";
@@ -54,6 +56,7 @@ pub fn run() {
       tauri_call_tencent_vpc_api,
       tauri_call_tencent_tat_api,
       tauri_init_tencent_tat_client,
+      tauri_ping_v2ray_agent,
       tauri_generate_uuid,
       tauri_test,
       tauri_start_v2ray,
