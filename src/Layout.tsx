@@ -1,11 +1,19 @@
-import { App as AntApp } from 'antd';
-import type { FC } from 'react';
+import { App as AntApp, Spin } from 'antd';
+import { useEffect, useState, type FC } from 'react';
 import { InstanceView } from './views/instance';
 import { cs, useQuery } from './service/util';
 import { SettingsView } from './views/settings';
 import { globalStore } from './store/global';
 import { OverviewView } from './views/overview';
 import { LogView } from './views/logview';
+import { useLogListen } from './views/logview/listen';
+import { appendLog } from './store/log';
+import {
+  loadInstance,
+  pingV2RayInterval,
+  pingV2RayOnce,
+  startV2RayCore,
+} from './views/instance/helper';
 
 const ViewItems = [
   {
@@ -33,16 +41,56 @@ const ViewItems = [
 export const Layout: FC = () => {
   const { message } = AntApp.useApp();
   const [settings] = globalStore.useStore('settings');
+  const [loaded, setLoaded] = useState(false);
 
   const [view, setView] = useQuery(
     'view',
     settings.secretKey && settings.instanceType ? 'overview' : 'settings',
   );
 
-  return (
+  useLogListen();
+
+  const initialize = async () => {
+    const settings = globalStore.get('settings');
+    if (!settings.secretKey || !settings.instanceType) return;
+
+    const [err, res] = await loadInstance();
+    if (err || !res.InstanceSet.length) return;
+    const inst = res.InstanceSet[0];
+    globalStore.set('instance', inst);
+    if (!(await pingV2RayOnce(inst))) {
+      return;
+    }
+    globalStore.set('agentInstalled', true);
+    appendLog('[ping] ==> 开始定时 Ping 服务');
+    void pingV2RayInterval();
+    void startV2RayCore();
+  };
+  useEffect(() => {
+    void initialize()
+      .catch((ex) => {
+        void message.error(`${ex}`);
+      })
+      .finally(() => {
+        if (!globalStore.get('instance') || !globalStore.get('agentInstalled')) {
+          setView('instance');
+        }
+        setLoaded(true);
+      });
+  }, []);
+
+  return loaded ? (
     <>
       <div className='flex w-32 flex-shrink-0 flex-col border-r border-solid border-border'>
-        <div className='pb-3 pl-4 pt-5 text-3xl'>V2RAY</div>
+        <div
+          className='cursor-pointer pb-3 pl-4 pt-5 text-3xl'
+          onClick={() => {
+            history.replaceState(null, '', '/');
+            location.reload();
+          }}
+        >
+          V2RAY
+        </div>
         {ViewItems.map((item) => (
           <div
             key={item.key}
@@ -72,5 +120,9 @@ export const Layout: FC = () => {
       {view === 'settings' && <SettingsView />}
       {view === 'logs' && <LogView />}
     </>
+  ) : (
+    <div className='flex w-full items-center justify-center'>
+      <Spin />
+    </div>
   );
 };

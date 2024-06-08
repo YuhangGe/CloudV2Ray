@@ -15,6 +15,8 @@ export const logStore = createStore<LogStore>({
 export const MAX_LOGS_LENGTH = 1000;
 
 export function appendLog(log: string) {
+  // eslint-disable-next-line no-console
+  console.log(log);
   logStore.set('logs', (oldLogs) => {
     const newLogs = oldLogs.slice();
     newLogs.push({ id: uid(), text: log });

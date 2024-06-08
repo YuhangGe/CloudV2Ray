@@ -129,7 +129,7 @@ export const SettingsView: FC = () => {
           >
             保存
           </Button>
-          {tab === 'instance' && <Price />}
+          {tab === 'instance' && settings.instanceType && <Price />}
         </div>
       </Form>
     </div>

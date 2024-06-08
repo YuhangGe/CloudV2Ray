@@ -9,7 +9,6 @@ use tencent::{
   tauri_call_tencent_cvm_api, tauri_call_tencent_tat_api, tauri_call_tencent_vpc_api,
   tauri_init_tencent_cvm_client, tauri_init_tencent_tat_client, tauri_init_tencent_vpc_client,
 };
-use test::tauri_start_v2ray;
 use test::tauri_test;
 use util::get_platform_zip_file;
 use util::tauri_generate_uuid;
@@ -68,11 +67,11 @@ pub fn run() {
       tauri_start_v2ray_server,
       tauri_generate_uuid,
       tauri_test,
-      tauri_start_v2ray,
     ])
     .plugin(tauri_plugin_dialog::init())
     // .plugin(tauri_plugin_shell::init())
     .setup(|app| {
+      println!("setuppppp");
       if get_platform_zip_file().eq("") {
         app.dialog().message("不支持当前平台！").blocking_show();
         std::process::exit(-1);

@@ -1,9 +1,9 @@
 {
-  "productName": "cloudv2ray",
+  "productName": "CloudV2Ray",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.cloudv2ray.dev",
   "build": {
-    "frontendDist": "../build",
+    "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build"

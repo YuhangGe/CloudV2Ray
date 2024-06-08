@@ -1,29 +1,15 @@
 import { Button, Tag } from 'antd';
-import { useEffect, useState, type FC } from 'react';
-import { DescribeInstances } from '@/service/tencent';
+import { useState, type FC } from 'react';
+import { loadInstance } from './helper';
 import { globalStore } from '@/store/global';
 
 export const Instance: FC = () => {
   const [inst, setInst] = globalStore.useStore('instance');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const loadInst = async (id?: string) => {
     setLoading(true);
-
-    const [err, res] = await DescribeInstances({
-      Limit: 1,
-      Offset: 0,
-      ...(id
-        ? { InstanceIds: [id] }
-        : {
-            Filters: [
-              {
-                Name: 'instance-name',
-                Values: [globalStore.get('settings').resourceName],
-              },
-            ],
-          }),
-    });
+    const [err, res] = await loadInstance(id);
     setLoading(false);
     if (err || res.TotalCount <= 0) {
       setInst(undefined);
@@ -31,24 +17,6 @@ export const Instance: FC = () => {
       setInst(res.InstanceSet[0]);
     }
   };
-  useEffect(() => {
-    if (!globalStore.get('instance')) {
-      void loadInst();
-    }
-  }, []);
-
-  useEffect(() => {
-    let tm = 0;
-    if (
-      !inst ||
-      inst.InstanceState === 'PENDING' ||
-      inst.InstanceState === 'TERMINATING' ||
-      !inst.PublicIpAddresses?.length
-    ) {
-      tm = window.setTimeout(() => loadInst(inst?.InstanceId), 3000);
-    }
-    return () => clearTimeout(tm);
-  }, [inst]);
 
   return (
     <>
