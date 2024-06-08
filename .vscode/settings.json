@@ -25,5 +25,8 @@
   },
   "iconifySearch.codeType": "tailwindcss-react",
   "iconifySearch.favorTabs": ["ant-design", "material-symbols"],
-  "iconifySearch.favorGroup": "ant-design"
+  "iconifySearch.favorGroup": "ant-design",
+  "[groovy]": {
+    "editor.defaultFormatter": "NicolasVuillamy.vscode-groovy-lint"
+  }
 }
