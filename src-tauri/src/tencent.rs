@@ -101,6 +101,7 @@ impl TencentCloudClient {
 static CVM_CLIENT: OnceCell<TencentCloudClient> = OnceCell::new();
 static VPC_CLIENT: OnceCell<TencentCloudClient> = OnceCell::new();
 static TAT_CLIENT: OnceCell<TencentCloudClient> = OnceCell::new();
+static BILL_CLIENT: OnceCell<TencentCloudClient> = OnceCell::new();
 
 fn init_tencent_client(
   client: &OnceCell<TencentCloudClient>,
@@ -134,6 +135,12 @@ pub async fn tauri_init_tencent_vpc_client(secret_id: &str, secret_key: &str) ->
 #[tauri::command]
 pub async fn tauri_init_tencent_tat_client(secret_id: &str, secret_key: &str) -> TAResult<()> {
   init_tencent_client(&TAT_CLIENT, "tat", "2020-10-28", secret_id, secret_key);
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn tauri_init_tencent_bill_client(secret_id: &str, secret_key: &str) -> TAResult<()> {
+  init_tencent_client(&BILL_CLIENT, "billing", "2018-07-09", secret_id, secret_key);
   Ok(())
 }
 
@@ -176,4 +183,13 @@ pub async fn tauri_call_tencent_tat_api(
   body: String,
 ) -> TAResult<String> {
   call_tencent_api(&TAT_CLIENT, region, action, body).await
+}
+
+#[tauri::command]
+pub async fn tauri_call_tencent_bill_api(
+  region: &str,
+  action: &str,
+  body: String,
+) -> TAResult<String> {
+  call_tencent_api(&BILL_CLIENT, region, action, body).await
 }

@@ -8,6 +8,7 @@ const inited = {
   cvm: false,
   vpc: false,
   tat: false,
+  bill: false,
 };
 async function callTencentApi<T>({
   service,
@@ -15,7 +16,7 @@ async function callTencentApi<T>({
   action,
   data,
 }: {
-  service: 'cvm' | 'tat' | 'vpc';
+  service: 'cvm' | 'tat' | 'vpc' | 'bill';
   region?: string;
   action: string;
   data?: Record<string, unknown>;
@@ -64,6 +65,10 @@ export interface CVMInstance {
   InstanceId: string;
   InstanceName: string;
   PublicIpAddresses: string[];
+  InternetAccessible: {
+    InternetChargeType: 'TRAFFIC_POSTPAID_BY_HOUR';
+    InternetMaxBandwidthOut: number;
+  };
   InstanceState: 'PENDING' | 'RUNNING' | 'STOPPED' | 'SHUTDOWN' | 'TERMINATING' | 'LAUNCH_FAILED';
 }
 export function DescribeInstances({
@@ -429,5 +434,17 @@ export function DeleteCommand({ region, ...data }: { region?: string; CommandId:
     region,
     action: 'DeleteCommand',
     data,
+  });
+}
+
+export interface CVMBalance {
+  RealBalance: number;
+  CashAccountBalance: number;
+}
+export function DescribeAccountBalance(params?: { region?: string }) {
+  return callTencentApi<CVMBalance>({
+    service: 'bill',
+    region: params?.region,
+    action: 'DescribeAccountBalance',
   });
 }

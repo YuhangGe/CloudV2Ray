@@ -1,9 +1,12 @@
 import { type FC } from 'react';
 import { Tag } from 'antd';
+import { Balance } from './Balance';
+import { Bandwidth } from './Bandwind';
 import { globalStore } from '@/store/global';
 
 export const OverviewView: FC = () => {
   const [inst] = globalStore.useStore('instance');
+
   return (
     <div className='relative flex-1 overflow-x-hidden px-6 pt-5'>
       <div className='mb-7 mr-4 mt-1 text-2xl font-medium'>概览</div>
@@ -17,6 +20,8 @@ export const OverviewView: FC = () => {
           <span>本地代理：</span>
           <Tag>{inst ? `socks5://127.0.0.1:7890` : '-'}</Tag>
         </div>
+        {inst && <Bandwidth inst={inst} />}
+        <Balance />
       </div>
     </div>
   );
