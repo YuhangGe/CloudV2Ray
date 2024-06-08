@@ -1,5 +1,5 @@
 import { createStore } from 'lrhs';
-const ThemeKey = 'yav2ray.theme';
+const ThemeKey = 'cloudv2ray.theme';
 
 export type Theme = 'dark' | 'light' | 'system';
 export type ActualTheme = Exclude<Theme, 'system'>;

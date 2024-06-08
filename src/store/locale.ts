@@ -1,8 +1,8 @@
-import createStore from 'lrhs';
+import { createStore } from 'lrhs';
 
 export type Locale = 'zh-cn' | 'zh-tr' | 'en';
 
-const LocaleKey = 'yav2ray.language';
+const LocaleKey = 'cloudv2ray.language';
 function getLocale(): Locale {
   const lang = (localStorage.getItem(LocaleKey) || navigator.language || 'en')
     .toLowerCase()

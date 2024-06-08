@@ -9,7 +9,7 @@ export interface GlobalStore {
 }
 
 function getLs<P extends keyof GlobalStore, T = string>(key: P) {
-  const v = localStorage.getItem(`yav2ray.${key}`);
+  const v = localStorage.getItem(`cloudv2ray.${key}`);
   if (!v) return undefined;
   return JSON.parse(v) as T;
 }
@@ -22,6 +22,6 @@ export const globalStore = createStore<GlobalStore>({
 
 ['settings'].forEach((prop) => {
   globalStore.hook(prop as keyof GlobalStore, (v) => {
-    localStorage.setItem(`yav2ray.${prop}`, JSON.stringify(v));
+    localStorage.setItem(`cloudv2ray.${prop}`, JSON.stringify(v));
   });
 });

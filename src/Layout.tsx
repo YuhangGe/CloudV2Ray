@@ -51,9 +51,6 @@ export const Layout: FC = () => {
   useLogListen();
 
   const initialize = async () => {
-    const settings = globalStore.get('settings');
-    if (!settings.secretKey || !settings.instanceType) return;
-
     const [err, res] = await loadInstance();
     if (err || !res.InstanceSet.length) return;
     const inst = res.InstanceSet[0];
@@ -67,6 +64,11 @@ export const Layout: FC = () => {
     void startV2RayCore();
   };
   useEffect(() => {
+    const settings = globalStore.get('settings');
+    if (!settings.secretKey || !settings.instanceType) {
+      setLoaded(true);
+      return;
+    }
     void initialize()
       .catch((ex) => {
         void message.error(`${ex}`);
