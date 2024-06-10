@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { message } from './message';
 
 const pwd = [
   'abcdefghijklmnopqrstuvwxyz', // lower chars
@@ -97,4 +98,35 @@ export function renderTpl(tpl: string, ctx: Record<string, unknown>) {
     tpl = tpl.replace(r, v as string);
   });
   return tpl;
+}
+
+export function loadingMessage(title: string) {
+  const key = uid();
+  void message.open({
+    key,
+    duration: 0,
+    content: title,
+    type: 'loading',
+  });
+  return {
+    update(title: string) {
+      void message.open({
+        key,
+        duration: 0,
+        content: title,
+        type: 'loading',
+      });
+    },
+    end(title: string, type: 'success' | 'error' = 'success') {
+      void message.open({
+        key,
+        duration: 4,
+        content: title,
+        type,
+      });
+    },
+    close() {
+      void message.destroy(key);
+    },
+  };
 }

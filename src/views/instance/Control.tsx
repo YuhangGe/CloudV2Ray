@@ -1,28 +1,28 @@
-import { App, Button, Popconfirm } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { useState, type FC } from 'react';
 import { createPortal } from 'react-dom';
 import { Install } from './Install';
-import { installV2RayAgent, pingV2RayInterval, startV2RayCore, waitInstanceReady } from './helper';
+import {
+  installV2RayAgent,
+  pingV2RayInterval,
+  startV2RayCore,
+  waitInstanceAutomationAgentReady,
+  waitInstanceReady,
+} from './helper';
 import { loadInstanceDependentResources } from '@/service/instance';
 import { CreateInstance, TerminateInstance } from '@/service/tencent';
 import { globalStore } from '@/store/global';
-import { uid } from '@/service/util';
+import { loadingMessage } from '@/service/util';
 
 export const Control: FC = () => {
   const [inst, setInst] = globalStore.useStore('instance');
   const [creating, setCreating] = useState(false);
-  const { message } = App.useApp();
   const doCreate = async () => {
-    const msgId = uid();
-    void message.open({
-      type: 'loading',
-      content: '正在创建主机...',
-      duration: 0,
-      key: msgId,
-    });
+    const msg = loadingMessage('正在创建主机...');
+
     const final = () => {
       setCreating(false);
-      message.destroy(msgId);
+      msg.close();
     };
     setCreating(true);
     const deps = await loadInstanceDependentResources();
@@ -32,32 +32,20 @@ export const Control: FC = () => {
     const [err, res] = await CreateInstance(deps);
     if (err) return final();
     setInst(res);
-    void message.open({
-      key: msgId,
-      type: 'loading',
-      duration: 0,
-      content: '正在等待主机启动...',
-    });
+    void msg.update('正在等待主机启动...');
     await waitInstanceReady(res);
-    void message.open({
-      key: msgId,
-      type: 'loading',
-      duration: 0,
-      content: '正在远程主机上安装 V2Ray 服务...',
-    });
+    void msg.update('正在等待远程主机自动化助手上线...');
+    await waitInstanceAutomationAgentReady(res);
+    void msg.update('正在远程主机上安装 V2Ray 服务...');
     const x = await installV2RayAgent(res);
     setCreating(false);
     if (!x) {
-      void message.open({
-        key: msgId,
-        type: 'error',
-        duration: 5,
-        content: '远程主机安装 V2Ray 失败！请尝试重新安装。',
-      });
+      void msg.end('远程主机安装 V2Ray 失败！请尝试重新安装。', 'error');
     } else {
       globalStore.set('agentInstalled', true);
       void pingV2RayInterval();
       void startV2RayCore();
+      void msg.end('远程主机安装 V2Ray 完成，已启动本地 v2ray-core 代理！');
     }
   };
 

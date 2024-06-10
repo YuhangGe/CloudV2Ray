@@ -3,6 +3,7 @@ import { globalStore } from '@/store/global';
 import configTpl from '@/assets/v2ray.conf.template.json?raw';
 import {
   CreateCommand,
+  DescribeAutomationAgentStatus,
   DescribeCommands,
   DescribeInstances,
   InvokeCommand,
@@ -32,11 +33,27 @@ export async function loadInstance(id?: string) {
 
 export async function waitInstanceReady(inst: CVMInstance) {
   while (inst.InstanceState !== 'RUNNING' || !inst.PublicIpAddresses?.[0]) {
-    await new Promise((res) => setTimeout(res, 2000));
+    await new Promise((res) => setTimeout(res, 1000));
     const [err, res] = await loadInstance(inst.InstanceId);
     if (!err && res.InstanceSet.length) {
       inst = res.InstanceSet[0];
     }
+  }
+}
+
+export async function waitInstanceAutomationAgentReady(inst: CVMInstance) {
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const [err, res] = await DescribeAutomationAgentStatus({
+      InstanceIds: [inst.InstanceId],
+    });
+    if (!err && res.AutomationAgentSet.length) {
+      const ag = res.AutomationAgentSet[0];
+      if (ag.AgentStatus === 'Online') {
+        return true;
+      }
+    }
+    await new Promise((res) => setTimeout(res, 1000));
   }
 }
 

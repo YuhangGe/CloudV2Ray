@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import { Tag } from 'antd';
-import { Price } from './Price';
+import { Price } from '../overview/Price';
+import { Bandwidth } from '../overview/Bandwind';
 import { Instance } from './Instance';
 import { Control } from './Control';
 import { globalStore } from '@/store/global';
@@ -30,6 +31,7 @@ export const InstanceView: FC = () => {
             <span className='whitespace-nowrap'>主机区域：</span>
             <Tag>{regionNameMap[settings.region]}</Tag>
           </div>
+          <Bandwidth />
           <Price />
         </div>
 

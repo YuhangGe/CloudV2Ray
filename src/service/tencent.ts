@@ -194,6 +194,19 @@ export function InquiryPriceRunInstances() {
   });
 }
 
+export function ResetInstancesInternetMaxBandwidth(instanceId: string, maxBandwidth: number) {
+  return callTencentApi({
+    service: 'cvm',
+    action: 'ResetInstancesInternetMaxBandwidth',
+    data: {
+      InstanceIds: [instanceId],
+      InternetAccessible: {
+        InternetMaxBandwidthOut: maxBandwidth,
+      },
+    },
+  });
+}
+
 export function AssociateAddress({
   region,
   ...data
@@ -373,6 +386,22 @@ export function DescribeCommands({ region, ...data }: DescribeParams) {
     service: 'tat',
     region,
     action: 'DescribeCommands',
+    data,
+  });
+}
+export function DescribeAutomationAgentStatus({
+  region,
+  ...data
+}: DescribeParams & {
+  InstanceIds: string[];
+}) {
+  return callTencentApi<{
+    TotalCount: number;
+    AutomationAgentSet: { AgentStatus: 'Offline' | 'Online' }[];
+  }>({
+    service: 'tat',
+    region,
+    action: 'DescribeAutomationAgentStatus',
     data,
   });
 }

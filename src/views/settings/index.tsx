@@ -1,7 +1,7 @@
 import { App, Button, Form, Input, Tabs } from 'antd';
 import { useEffect, useMemo, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { Price } from '../instance/Price';
+import { Price } from '../overview/Price';
 import { Export } from './Export';
 import { InstancePanel } from './Instance';
 import type { Settings } from '@/service/settings';

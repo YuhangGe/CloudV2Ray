@@ -2,6 +2,7 @@ import { type FC } from 'react';
 import { Tag } from 'antd';
 import { Balance } from './Balance';
 import { Bandwidth } from './Bandwind';
+import { Price } from './Price';
 import { globalStore } from '@/store/global';
 
 export const OverviewView: FC = () => {
@@ -20,8 +21,9 @@ export const OverviewView: FC = () => {
           <span>本地代理：</span>
           <Tag>{inst ? `socks5://127.0.0.1:7890` : '-'}</Tag>
         </div>
-        {inst && <Bandwidth inst={inst} />}
+        <Bandwidth />
         <Balance />
+        <Price />
       </div>
     </div>
   );
