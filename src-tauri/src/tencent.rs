@@ -144,7 +144,7 @@ pub async fn tauri_init_tencent_bill_client(secret_id: &str, secret_key: &str) -
   Ok(())
 }
 
-async fn call_tencent_api(
+pub async fn call_tencent_api(
   client: &OnceCell<TencentCloudClient>,
   region: &str,
   action: &str,

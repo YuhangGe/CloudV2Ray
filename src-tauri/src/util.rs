@@ -1,3 +1,5 @@
+use std::process;
+
 use anyhow_tauri::TAResult;
 use tauri::{AppHandle, Manager};
 use uuid::Uuid;
@@ -6,6 +8,10 @@ use uuid::Uuid;
 pub fn tauri_generate_uuid() -> TAResult<String> {
   let id = Uuid::new_v4();
   Ok(id.to_string())
+}
+#[tauri::command]
+pub fn tauri_exit_process() -> TAResult<()> {
+  process::exit(0);
 }
 
 pub const fn get_platform_zip_file() -> &'static str {

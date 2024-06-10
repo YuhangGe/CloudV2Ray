@@ -9,12 +9,12 @@ export const Bandwidth: FC = () => {
   const [settings, setSettings] = globalStore.useStore('settings');
   const { message } = App.useApp();
   const [v, setV] = useState(
-    inst?.InternetAccessible.InternetMaxBandwidthOut ?? settings.bandWidth ?? 1,
+    inst?.InternetAccessible?.InternetMaxBandwidthOut ?? settings.bandWidth ?? 1,
   );
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const submit = async () => {
-    if (!inst || v === inst.InternetAccessible.InternetMaxBandwidthOut) {
+    if (!inst || v === inst.InternetAccessible?.InternetMaxBandwidthOut) {
       setOpen(false);
       return;
     }
@@ -40,14 +40,14 @@ export const Bandwidth: FC = () => {
   return (
     <div className='flex items-center gap-2'>
       <span>公网带宽：</span>
-      {inst ? (
+      {inst?.InternetAccessible ? (
         <>
           <Tag>{inst.InternetAccessible.InternetMaxBandwidthOut}Mbps</Tag>
 
           <Tooltip title='调整带宽大小'>
             <Button
               onClick={() => {
-                setV(inst?.InternetAccessible.InternetMaxBandwidthOut ?? settings.bandWidth ?? 1);
+                setV(inst.InternetAccessible.InternetMaxBandwidthOut ?? settings.bandWidth ?? 1);
                 setOpen(true);
               }}
               className='translate-y-[1.5px] text-lg'

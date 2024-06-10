@@ -1,9 +1,17 @@
+mod sysproxy;
 mod tencent;
 mod test;
 mod util;
 mod v2ray;
 
-use tauri::Manager;
+use sysproxy::{tauri_is_sysproxy_enabled, tauri_set_sysproxy};
+use tauri::image::Image;
+#[cfg(not(target_os = "android"))]
+use tauri::{
+  menu::{Menu, PredefinedMenuItem},
+  tray::{TrayIconBuilder, TrayIconEvent},
+};
+use tauri::{AppHandle, Manager, WebviewWindowBuilder};
 use tauri_plugin_dialog::DialogExt;
 use tencent::{
   tauri_call_tencent_bill_api, tauri_call_tencent_cvm_api, tauri_call_tencent_tat_api,
@@ -12,49 +20,47 @@ use tencent::{
 };
 use test::tauri_test;
 use util::get_platform_zip_file;
-use util::tauri_generate_uuid;
+use util::{tauri_exit_process, tauri_generate_uuid};
 use v2ray::extract_v2ray_if_need;
 use v2ray::init_v2ray_manager;
 use v2ray::V2RayManager;
 use v2ray::{tauri_ping_v2ray_interval, tauri_ping_v2ray_once, tauri_start_v2ray_server};
 
-// const TRAY_MENU_QUIT: &str = "quit";
-// const TRAY_MENU_SETTING: &str = "setting";
+const APP_TITLE: &str = "CloudV2Ray - 基于云计算的 V2Ray 客户端";
 
-// fn toggle_window(app: &AppHandle) {
-//   if let Some(win) = app.get_window("setting") {
-//     if let Ok(vis) = win.is_visible() {
-//       if vis == false {
-//         win.show().unwrap();
-//       }
-//     }
-//     win.set_focus().unwrap();
-//     return;
-//   }
-//   let setting_window = WindowBuilder::new(app, "setting", Window::App("index.html".into()))
-//     .build()
-//     .unwrap();
+fn open_window(app: &AppHandle) {
+  if let Some(_win) = app.get_webview_window("main") {
+    #[cfg(target_os = "windows")]
+    {
+      _win.show().unwrap();
+      _win.set_focus().unwrap();
+    }
 
-//   setting_window
-//     .set_title("CloudV2Ray - 基于云计算的 V2Ray 客户端")
-//     .unwrap();
-//   setting_window.show().unwrap();
-//   setting_window.set_focus().unwrap();
-// }
+    #[cfg(target_os = "macos")]
+    tauri::AppHandle::show(&app.app_handle()).unwrap();
+    return;
+  }
+  let mut setting_window = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default());
+  #[cfg(not(target_os = "android"))]
+  {
+    setting_window = setting_window
+      .title(APP_TITLE)
+      .inner_size(800., 600.)
+      .center();
+  }
+
+  let setting_window = setting_window.build().unwrap();
+
+  #[cfg(not(target_os = "android"))]
+  {
+    setting_window.show().unwrap();
+    setting_window.set_focus().unwrap();
+  }
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-  // let quit = CustomMenuItem::new(TRAY_MENU_QUIT, "退出");
-  // let setting = CustomMenuItem::new(TRAY_MENU_SETTING, "设置");
-
-  // let tray_menu = SystemTrayMenu::new()
-  //   .add_item(setting)
-  //   .add_native_item(SystemTrayMenuItem::Separator)
-  //   .add_item(quit);
-  // let tray = SystemTray::new()
-  //   .with_menu(tray_menu)
-  //   .with_tooltip("CloudV2Ray - 基于云计算的 v2ray 客户端");
-  tauri::Builder::default()
+  let mut app = tauri::Builder::default()
     .manage(V2RayManager::new())
     .invoke_handler(tauri::generate_handler![
       tauri_init_tencent_cvm_client,
@@ -69,6 +75,9 @@ pub fn run() {
       tauri_ping_v2ray_interval,
       tauri_start_v2ray_server,
       tauri_generate_uuid,
+      tauri_exit_process,
+      tauri_is_sysproxy_enabled,
+      tauri_set_sysproxy,
       tauri_test,
     ])
     .plugin(tauri_plugin_dialog::init())
@@ -83,33 +92,59 @@ pub fn run() {
         app.dialog().message("解压 V2Ray 异常").blocking_show();
         std::process::exit(-1);
       }
+
+      #[cfg(not(target_os = "android"))]
+      {
+        let tray_menu = Menu::with_items(
+          app.handle(),
+          &[&PredefinedMenuItem::quit(app.handle(), Some("退出"))?],
+        )
+        .unwrap();
+
+        let _tray = TrayIconBuilder::new()
+          .icon(Image::from_path("./icons/icon.png")?)
+          .tooltip(APP_TITLE)
+          .menu(&tray_menu)
+          .build(app.handle());
+
+        app.on_tray_icon_event(|tray, event| {
+          if let TrayIconEvent::Click { .. } = event {
+            let app = tray.app_handle();
+            open_window(app);
+          }
+        });
+      }
       init_v2ray_manager(app.handle(), app.state::<V2RayManager>());
+
+      #[cfg(target_os = "macos")]
+      app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+
+      open_window(app.handle());
+
       Ok(())
-    })
-    // .system_tray(tray)
-    // .on_system_tray_event(|app, event| match event {
-    //   SystemTrayEvent::LeftClick { .. } => {
-    //     toggle_window(app);
-    //   }
-    //   SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-    //     TRAY_MENU_QUIT => std::process::exit(0),
-    //     TRAY_MENU_SETTING => {
-    //       toggle_window(app);
-    //     }
-    //     _ => {}
-    //   },
-    //   _ => {}
-    // })
-    // .run(|_app_handle, event| match event {
-    //   tauri::RunEvent::ExitRequested { api, .. } => {
-    //     api.prevent_exit();
-    //   }
-    //   _ => {}
-    // })
+    });
+
+  #[cfg(not(target_os = "android"))]
+  {
+    app = app.on_window_event(|window, event| match event {
+      tauri::WindowEvent::CloseRequested { api, .. } => {
+        #[cfg(target_os = "windows")]
+        {
+          window.hide().unwrap();
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+          tauri::AppHandle::hide(&window.app_handle()).unwrap();
+        }
+
+        api.prevent_close();
+      }
+      _ => {}
+    });
+  }
+
+  app
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
-
-  // tauri::Builder::default()
-  //   .run(tauri::generate_context!())
-  //   .expect("error while running tauri application");
 }

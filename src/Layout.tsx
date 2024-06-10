@@ -1,5 +1,6 @@
-import { App as AntApp, Spin } from 'antd';
+import { App as AntApp, Button, Spin, Tooltip } from 'antd';
 import { useEffect, useState, type FC } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 import { InstanceView } from './views/instance';
 import { cs, useQuery } from './service/util';
 import { SettingsView } from './views/settings';
@@ -116,6 +117,19 @@ export const Layout: FC = () => {
             <span className='ml-2'>{item.label}</span>
           </div>
         ))}
+        <div className='flex-1'></div>
+        <Tooltip title='退出 CloudV2Ray，结束本地代理'>
+          <Button
+            onClick={() => {
+              void invoke('tauri_exit_process');
+            }}
+            className='flex items-center justify-center pb-4 pt-2'
+            style={{ width: '100%' }}
+            icon={<span className='icon-[grommet-icons--power-shutdown]'></span>}
+            type='link'
+            danger
+          />
+        </Tooltip>
       </div>
       {view === 'overview' && <OverviewView />}
       {view === 'instance' && <InstanceView />}
