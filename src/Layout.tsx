@@ -1,12 +1,8 @@
 import { App as AntApp, Button, Spin, Tooltip } from 'antd';
-import { useEffect, useState, type FC } from 'react';
+import { Suspense, lazy, useEffect, useState, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { InstanceView } from './views/instance';
 import { cs, useQuery } from './service/util';
-import { SettingsView } from './views/settings';
 import { globalStore } from './store/global';
-import { OverviewView } from './views/overview';
-import { LogView } from './views/logview';
 import { useLogListen } from './views/logview/listen';
 import { appendLog } from './store/log';
 import {
@@ -15,6 +11,11 @@ import {
   pingV2RayOnce,
   startV2RayCore,
 } from './views/instance/helper';
+
+const InstanceView = lazy(() => import('./views/instance'));
+const SettingsView = lazy(() => import('./views/settings'));
+const OverviewView = lazy(() => import('./views/overview'));
+const LogView = lazy(() => import('./views/logview'));
 
 const ViewItems = [
   {
@@ -131,10 +132,26 @@ export const Layout: FC = () => {
           />
         </Tooltip>
       </div>
-      {view === 'overview' && <OverviewView />}
-      {view === 'instance' && <InstanceView />}
-      {view === 'settings' && <SettingsView />}
-      {view === 'logs' && <LogView />}
+      {view === 'overview' && (
+        <Suspense>
+          <OverviewView />
+        </Suspense>
+      )}
+      {view === 'instance' && (
+        <Suspense>
+          <InstanceView />
+        </Suspense>
+      )}
+      {view === 'settings' && (
+        <Suspense>
+          <SettingsView />
+        </Suspense>
+      )}
+      {view === 'logs' && (
+        <Suspense>
+          <LogView />
+        </Suspense>
+      )}
     </>
   ) : (
     <div className='flex w-full items-center justify-center'>

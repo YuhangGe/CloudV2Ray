@@ -10,7 +10,7 @@ import { RegionOptions } from '@/service/region';
 
 const regionNameMap = Object.fromEntries(RegionOptions.map((r) => [r.value, r.label]));
 
-export const InstanceView: FC = () => {
+const InstanceView: FC = () => {
   const [settings] = globalStore.useStore('settings');
 
   return (
@@ -44,3 +44,5 @@ export const InstanceView: FC = () => {
     </div>
   );
 };
+
+export default InstanceView;

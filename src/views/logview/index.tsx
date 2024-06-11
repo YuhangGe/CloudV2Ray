@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { logStore } from '@/store/log';
 
-export const LogView: FC = () => {
+const LogView: FC = () => {
   const [logs] = logStore.useStore('logs');
 
   return (
@@ -18,3 +18,5 @@ export const LogView: FC = () => {
     </div>
   );
 };
+
+export default LogView;

@@ -8,7 +8,7 @@ import type { Settings } from '@/service/settings';
 import { globalStore } from '@/store/global';
 import { copyToClipboard, generateStrongPassword, useQuery } from '@/service/util';
 
-export const SettingsView: FC = () => {
+const SettingsView: FC = () => {
   const [form] = Form.useForm<Settings>();
   const [settings, setSettings] = globalStore.useStore('settings');
 
@@ -151,3 +151,5 @@ export const SettingsView: FC = () => {
     </div>
   );
 };
+
+export default SettingsView;

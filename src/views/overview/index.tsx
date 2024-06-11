@@ -6,7 +6,7 @@ import { Bandwidth } from './Bandwind';
 import { Price } from './Price';
 import { globalStore } from '@/store/global';
 
-export const OverviewView: FC = () => {
+const OverviewView: FC = () => {
   const [inst] = globalStore.useStore('instance');
   const [sysproxy, setSysprox] = useState(false);
   const { message } = App.useApp();
@@ -99,3 +99,5 @@ export const OverviewView: FC = () => {
     </div>
   );
 };
+
+export default OverviewView;

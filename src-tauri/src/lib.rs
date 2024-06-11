@@ -40,10 +40,10 @@ fn open_window(app: &AppHandle) {
     tauri::AppHandle::show(&app.app_handle()).unwrap();
     return;
   }
-  let setting_window = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default());
+  let mut setting_window = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default());
   #[cfg(not(target_os = "android"))]
   {
-    let setting_window = setting_window
+    setting_window = setting_window
       .title(APP_TITLE)
       .inner_size(800., 600.)
       .center();
