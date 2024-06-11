@@ -22,7 +22,7 @@ use tencent::{
 };
 use test::tauri_test;
 use util::get_platform_zip_file;
-use util::{tauri_exit_process, tauri_generate_uuid};
+use util::{tauri_exit_process, tauri_open_devtools, tauri_generate_uuid};
 use v2ray::extract_v2ray_if_need;
 use v2ray::init_v2ray_manager;
 use v2ray::V2RayManager;
@@ -77,6 +77,7 @@ pub fn run() {
       tauri_ping_v2ray_interval,
       tauri_start_v2ray_server,
       tauri_generate_uuid,
+      tauri_open_devtools,
       tauri_exit_process,
       tauri_is_sysproxy_enabled,
       tauri_set_sysproxy,
@@ -104,7 +105,7 @@ pub fn run() {
         .unwrap();
 
         let _tray = TrayIconBuilder::new()
-          .icon(Image::from_bytes(include_bytes!("../icons/128x128.png"))?)
+          .icon(Image::from_bytes(include_bytes!("../icons/64x64.png"))?)
           .tooltip(APP_TITLE)
           .menu(&tray_menu)
           .build(app.handle());

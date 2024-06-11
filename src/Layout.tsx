@@ -1,10 +1,12 @@
 import { App as AntApp, Button, Spin, Tooltip } from 'antd';
 import { Suspense, lazy, useEffect, useState, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import imgLogo from '../src-tauri/icons/128x128.png';
 import { cs, useQuery } from './service/util';
 import { globalStore } from './store/global';
 import { useLogListen } from './views/logview/listen';
 import { appendLog } from './store/log';
+
 import {
   loadInstance,
   pingV2RayInterval,
@@ -85,15 +87,9 @@ export const Layout: FC = () => {
 
   return loaded ? (
     <>
-      <div className='flex w-32 flex-shrink-0 flex-col border-r border-solid border-border'>
-        <div
-          className='cursor-pointer pb-3 pl-4 pt-5 text-3xl'
-          onClick={() => {
-            history.replaceState(null, '', '/');
-            location.reload();
-          }}
-        >
-          V2RAY
+      <div className='flex w-28 flex-shrink-0 flex-col border-r border-solid border-border'>
+        <div className='pl-5 pt-[5px]'>
+          <img src={imgLogo} className='size-16' />
         </div>
         {ViewItems.map((item) => (
           <div
@@ -110,7 +106,7 @@ export const Layout: FC = () => {
               setView(item.key);
             }}
             className={cs(
-              'flex w-full cursor-pointer items-center py-5 pl-4 text-lg hover:bg-hover hover:text-white',
+              'flex w-full cursor-pointer items-center py-5 pl-5 text-lg hover:bg-hover hover:text-white',
               view === item.key && 'text-blue',
             )}
           >

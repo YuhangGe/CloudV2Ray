@@ -5,6 +5,7 @@ import { themeStore } from './store/theme';
 import { loadAntdLocale, localeStore } from './store/locale';
 import { MessageWrapper } from './service/message';
 import { Layout } from './Layout';
+import { ContextMenu } from './ContextMenu';
 
 function App() {
   const [locale] = localeStore.useStore('currentLanguage');
@@ -25,6 +26,7 @@ function App() {
       <AntApp className='flex size-full overflow-hidden bg-background'>
         <MessageWrapper />
         <Layout />
+        <ContextMenu />
       </AntApp>
     </ConfigProvider>
   ) : null;

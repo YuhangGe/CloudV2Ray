@@ -13,7 +13,13 @@ pub fn tauri_generate_uuid() -> TAResult<String> {
 pub fn tauri_exit_process() -> TAResult<()> {
   process::exit(0);
 }
-
+#[tauri::command]
+pub fn tauri_open_devtools(h: AppHandle) -> TAResult<()> {
+  if let Some(win) = h.get_webview_window("main") {
+    win.open_devtools();
+  }
+  Ok(())
+}
 pub const fn get_platform_zip_file() -> &'static str {
   if cfg!(target_os = "windows") {
     if cfg!(target_arch = "x86_64") {

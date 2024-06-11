@@ -23,7 +23,7 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
-  "iconifySearch.codeType": "tailwindcss-react",
+  "iconifySearch.codeType": "svg",
   "iconifySearch.favorTabs": ["ant-design", "material-symbols"],
   "iconifySearch.favorGroup": "ant-design",
   "[groovy]": {

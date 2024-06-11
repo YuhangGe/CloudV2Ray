@@ -22,7 +22,6 @@ fn is_sysproxy_enabled(h: AppHandle) -> anyhow::Result<bool> {
   {
     let proxy = Sysproxy::get_system_proxy()?;
     emit_log(&h, "log::sys", &format!("{:?}", proxy));
-    println!("{:?}", proxy);
     return Ok(proxy.enable);
   }
   #[cfg(target_os = "android")]
