@@ -1,4 +1,4 @@
-import { App, Button, Form, Input, Tabs } from 'antd';
+import { App, Button, Form, Input, Tabs, Tooltip } from 'antd';
 import { useEffect, useMemo, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Price } from '../overview/Price';
@@ -87,33 +87,49 @@ export const SettingsView: FC = () => {
         {tab === 'secret' && (
           <>
             <Form.Item label='Secret Id' name='secretId' required rules={[{ required: true }]}>
-              <Input />
+              <Input
+                onFocus={(evt) => {
+                  setTimeout(() => evt.target.select());
+                }}
+              />
             </Form.Item>
             <Form.Item label='Secret Key' name='secretKey' required rules={[{ required: true }]}>
-              <Input />
+              <Input
+                onFocus={(evt) => {
+                  setTimeout(() => evt.target.select());
+                }}
+              />
             </Form.Item>
             <Form.Item label='VMess Id' name='token' required rules={[{ required: true }]}>
               <Input
-                className='cursor-pointer'
-                onFocus={() => {
-                  const tk = form.getFieldValue('token');
-                  if (tk) {
-                    void copyToClipboard(tk).then(() => {
-                      void message.success('已复制！');
-                    });
-                  }
+                className='cursor-pointer [&_.ant-input-group-addon]:p-0'
+                onFocus={(evt) => {
+                  setTimeout(() => evt.target.select());
                 }}
-                readOnly
                 addonAfter={
-                  <Button
-                    onClick={() => {
-                      void resetToken();
-                    }}
-                    size='small'
-                    type='text'
-                  >
-                    生成
-                  </Button>
+                  <Button.Group size='small'>
+                    <Tooltip title='生成 UUID'>
+                      <Button
+                        onClick={() => {
+                          void resetToken();
+                        }}
+                        icon={<span className='icon-[ant-design--reload-outlined]'></span>}
+                        type='link'
+                      ></Button>
+                    </Tooltip>
+                    <Button
+                      onClick={() => {
+                        const tk = form.getFieldValue('token');
+                        if (tk) {
+                          void copyToClipboard(tk).then(() => {
+                            void message.success('已复制！');
+                          });
+                        }
+                      }}
+                      type='link'
+                      icon={<span className='icon-[ant-design--copy-outlined]'></span>}
+                    />
+                  </Button.Group>
                 }
               />
             </Form.Item>

@@ -8,7 +8,7 @@ const pwd = [
   "`!?$?%^&*()_-+={[}]:;@'~#|\\<>.?/];", //special chars
 ];
 export function generateStrongPassword() {
-  return new Array(15)
+  return new Array(20)
     .fill(0)
     .map(() => {
       const c = pwd[Math.floor(Math.random() * pwd.length)];

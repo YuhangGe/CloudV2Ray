@@ -1,7 +1,7 @@
 import type { FormInstance } from 'antd';
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
-import { App, Button, Form, Input, InputNumber, Select } from 'antd';
+import { App, Button, Form, Input, InputNumber, Select, Tooltip } from 'antd';
 import type { DefaultOptionType } from 'antd/es/select';
 import type { Settings } from '@/service/settings';
 import { globalStore } from '@/store/global';
@@ -128,26 +128,34 @@ export const InstancePanel: FC<{
 
       <Form.Item label='登录密码' name='loginPwd' required rules={[{ required: true }]}>
         <Input
-          className='cursor-pointer'
-          onFocus={() => {
-            const tk = form.getFieldValue('loginPwd');
-            if (tk) {
-              void copyToClipboard(tk).then(() => {
-                void message.success('已复制！');
-              });
-            }
+          className='cursor-pointer [&_.ant-input-group-addon]:p-0'
+          onFocus={(evt) => {
+            setTimeout(() => evt.target.select());
           }}
-          readOnly
           addonAfter={
-            <Button
-              onClick={() => {
-                resetPwd();
-              }}
-              size='small'
-              type='text'
-            >
-              生成
-            </Button>
+            <Button.Group size='small'>
+              <Tooltip title='生成密码'>
+                <Button
+                  onClick={() => {
+                    resetPwd();
+                  }}
+                  icon={<span className='icon-[ant-design--reload-outlined]'></span>}
+                  type='link'
+                ></Button>
+              </Tooltip>
+              <Button
+                onClick={() => {
+                  const tk = form.getFieldValue('loginPwd');
+                  if (tk) {
+                    void copyToClipboard(tk).then(() => {
+                      void message.success('已复制！');
+                    });
+                  }
+                }}
+                type='link'
+                icon={<span className='icon-[ant-design--copy-outlined]'></span>}
+              />
+            </Button.Group>
           }
         />
       </Form.Item>

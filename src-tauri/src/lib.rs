@@ -8,7 +8,7 @@ use sysproxy::{tauri_is_sysproxy_enabled, tauri_set_sysproxy};
 use tauri::image::Image;
 #[cfg(not(target_os = "android"))]
 use tauri::{
-  menu::{Menu, PredefinedMenuItem},
+  // menu::{Menu, PredefinedMenuItem},
   tray::{TrayIconBuilder, TrayIconEvent},
 };
 use tauri::{AppHandle, Manager, WebviewWindowBuilder};
@@ -40,10 +40,10 @@ fn open_window(app: &AppHandle) {
     tauri::AppHandle::show(&app.app_handle()).unwrap();
     return;
   }
-  let mut setting_window = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default());
+  let setting_window = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default());
   #[cfg(not(target_os = "android"))]
   {
-    setting_window = setting_window
+    let setting_window = setting_window
       .title(APP_TITLE)
       .inner_size(800., 600.)
       .center();
@@ -95,16 +95,16 @@ pub fn run() {
 
       #[cfg(not(target_os = "android"))]
       {
-        let tray_menu = Menu::with_items(
-          app.handle(),
-          &[&PredefinedMenuItem::quit(app.handle(), Some("退出"))?],
-        )
-        .unwrap();
+        // let tray_menu = Menu::with_items(
+        //   app.handle(),
+        //   &[&PredefinedMenuItem::quit(app.handle(), Some("退出"))?],
+        // )
+        // .unwrap();
 
         let _tray = TrayIconBuilder::new()
-          .icon(Image::from_path("./icons/icon.png")?)
+          .icon(Image::from_bytes(include_bytes!("../icons/128x128.png"))?)
           .tooltip(APP_TITLE)
-          .menu(&tray_menu)
+          // .menu(&tray_menu)
           .build(app.handle());
 
         app.on_tray_icon_event(|tray, event| {
