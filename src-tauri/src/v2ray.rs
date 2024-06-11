@@ -31,6 +31,7 @@ async fn start_v2ray_server(
   h: AppHandle,
   state: State<'_, V2RayManager>,
 ) -> anyhow::Result<String> {
+  println!("starting v2ray core");
   let v2ray_proc = state.v2ray_proc.clone();
   if let Some(mut proc) = v2ray_proc.lock().await.take() {
     // 如果存在旧的 v2ray 进程，先关闭。
@@ -162,7 +163,8 @@ pub async fn tauri_ping_v2ray_interval(
 }
 
 #[tauri::command]
-pub async fn tauri_ping_v2ray_once(url: &str) -> TAResult<String> {
+pub async fn tauri_ping_v2ray_once(url: &str, h: AppHandle) -> TAResult<String> {
+  emit_log(&h, "debug", "ping once");
   ping(url).await.into_ta_result()
 }
 

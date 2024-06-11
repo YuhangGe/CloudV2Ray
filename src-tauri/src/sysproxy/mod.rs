@@ -19,8 +19,8 @@ fn is_sysproxy_enabled() -> anyhow::Result<bool> {
   #[cfg(not(target_os = "android"))]
   {
     let proxy = Sysproxy::get_system_proxy()?;
-    // println!("{:?}", proxy);
-    return Ok(proxy.enable && proxy.host.eq("127.0.0.1"));
+    println!("{:?}", proxy);
+    return Ok(proxy.enable);
   }
   #[cfg(target_os = "android")]
   {

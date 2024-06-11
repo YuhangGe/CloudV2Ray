@@ -33,11 +33,12 @@ export const Control: FC = () => {
     if (err) return final();
     setInst(res);
     void msg.update('正在等待主机启动...');
-    await waitInstanceReady(res);
+    const instWithEip = await waitInstanceReady(res);
+    setInst(instWithEip);
     void msg.update('正在等待远程主机自动化助手上线...');
-    await waitInstanceAutomationAgentReady(res);
+    await waitInstanceAutomationAgentReady(instWithEip);
     void msg.update('正在远程主机上安装 V2Ray 服务...');
-    const x = await installV2RayAgent(res);
+    const x = await installV2RayAgent(instWithEip);
     setCreating(false);
     if (!x) {
       void msg.end('远程主机安装 V2Ray 失败！请尝试重新安装。', 'error');

@@ -1,7 +1,8 @@
-import { Button, Tag } from 'antd';
+import { Button, Tag, message } from 'antd';
 import { useState, type FC } from 'react';
 import { loadInstance } from './helper';
 import { globalStore } from '@/store/global';
+import { copyToClipboard } from '@/service/util';
 
 export const Instance: FC = () => {
   const [inst, setInst] = globalStore.useStore('instance');
@@ -45,7 +46,19 @@ export const Instance: FC = () => {
           </div>
           <div className='flex items-center gap-2'>
             <span className='whitespace-nowrap'>公网地址：</span>
-            <Tag>{inst.PublicIpAddresses?.[0] || '-'}</Tag>
+            <Tag
+              className='cursor-pointer'
+              onClick={() => {
+                const ip = inst.PublicIpAddresses?.[0];
+                if (ip) {
+                  void copyToClipboard(`ssh ubuntu@${ip}`).then(() => {
+                    void message.success('已复制');
+                  });
+                }
+              }}
+            >
+              {inst.PublicIpAddresses?.[0] || '-'}
+            </Tag>
           </div>
         </>
       )}

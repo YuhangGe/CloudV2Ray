@@ -42,7 +42,10 @@ export const Bandwidth: FC = () => {
       <span>公网带宽：</span>
       {inst?.InternetAccessible ? (
         <>
-          <Tag>{inst.InternetAccessible.InternetMaxBandwidthOut}Mbps</Tag>
+          <span>
+            {inst.InternetAccessible.InternetMaxBandwidthOut}
+            <span className='ml-0.5'>Mbps</span>
+          </span>
 
           <Tooltip title='调整带宽大小'>
             <Button

@@ -58,11 +58,28 @@ export const OverviewView: FC = () => {
       <div className='flex flex-col gap-4'>
         <div className='flex items-center gap-2'>
           <span>远程地址：</span>
-          <Tag>{inst ? `vmess://${inst.PublicIpAddresses?.[0] ?? '-'}:2080` : '-'}</Tag>
+          <Tag className='font-mono'>
+            {inst ? `vmess://${inst.PublicIpAddresses?.[0] ?? '-'}:2080` : '-'}
+          </Tag>
         </div>
-        <div className='flex items-center gap-2'>
+        <div className='flex gap-2'>
           <span>本地代理：</span>
-          <Tag>{inst ? `socks5://127.0.0.1:7890` : '-'}</Tag>
+          {inst ? (
+            <div className='flex flex-col gap-1 font-mono'>
+              <Tag className='font-mono'>
+                <span className='inline-block w-10'>socks5</span>
+                {'://127.0.0.1:7890'}
+              </Tag>
+              {/* <Tag className='font-mono'>
+                <span style={{ letterSpacing: '0.38em' }} className='inline-block w-10'>
+                  http
+                </span>
+                {'://127.0.0.1:7891'}
+              </Tag> */}
+            </div>
+          ) : (
+            '-'
+          )}
         </div>
         <div className='flex items-center gap-2'>
           <span>系统代理：</span>

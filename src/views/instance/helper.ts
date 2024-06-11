@@ -39,6 +39,7 @@ export async function waitInstanceReady(inst: CVMInstance) {
       inst = res.InstanceSet[0];
     }
   }
+  return inst;
 }
 
 export async function waitInstanceAutomationAgentReady(inst: CVMInstance) {
