@@ -31,7 +31,7 @@ async fn start_v2ray_server(
   h: AppHandle,
   state: State<'_, V2RayManager>,
 ) -> anyhow::Result<String> {
-  println!("starting v2ray core");
+  emit_log(&h, "log::v2ray","starting v2ray core server...");
   let v2ray_proc = state.v2ray_proc.clone();
   if let Some(mut proc) = v2ray_proc.lock().await.take() {
     // 如果存在旧的 v2ray 进程，先关闭。
@@ -61,9 +61,12 @@ async fn start_v2ray_server(
   command.stdout(std::process::Stdio::piped());
   command.current_dir(v2ray_bin_dir);
 
+  #[cfg(target_os = "windows")]
+  command.creation_flags(0x08000000);
+
   let mut proc = command.spawn()?;
   let pid = proc.id().unwrap();
-  // println!("pid: {}", pid);
+  emit_log(&h, "log::v2ray",&format!("v2ray core pid: {}", pid));
 
   tokio::task::spawn(async move {
     let stdo = proc.stdout.take().unwrap();
