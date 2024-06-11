@@ -6,6 +6,8 @@ mod v2ray;
 
 use sysproxy::{tauri_is_sysproxy_enabled, tauri_set_sysproxy};
 use tauri::image::Image;
+use tauri::menu::{Menu, PredefinedMenuItem};
+use tauri::tray::MouseButton;
 #[cfg(not(target_os = "android"))]
 use tauri::{
   // menu::{Menu, PredefinedMenuItem},
@@ -95,22 +97,24 @@ pub fn run() {
 
       #[cfg(not(target_os = "android"))]
       {
-        // let tray_menu = Menu::with_items(
-        //   app.handle(),
-        //   &[&PredefinedMenuItem::quit(app.handle(), Some("退出"))?],
-        // )
-        // .unwrap();
+        let tray_menu = Menu::with_items(
+          app.handle(),
+          &[&PredefinedMenuItem::quit(app.handle(), Some("退出"))?],
+        )
+        .unwrap();
 
         let _tray = TrayIconBuilder::new()
           .icon(Image::from_bytes(include_bytes!("../icons/128x128.png"))?)
           .tooltip(APP_TITLE)
-          // .menu(&tray_menu)
+          .menu(&tray_menu)
           .build(app.handle());
 
         app.on_tray_icon_event(|tray, event| {
-          if let TrayIconEvent::Click { .. } = event {
-            let app = tray.app_handle();
-            open_window(app);
+          if let TrayIconEvent::Click { button, .. } = event {
+            if matches!(button, MouseButton::Left) {
+              let app = tray.app_handle();
+              open_window(app);
+            }
           }
         });
       }

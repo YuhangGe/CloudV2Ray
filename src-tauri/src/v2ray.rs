@@ -164,7 +164,7 @@ pub async fn tauri_ping_v2ray_interval(
 
 #[tauri::command]
 pub async fn tauri_ping_v2ray_once(url: &str, h: AppHandle) -> TAResult<String> {
-  emit_log(&h, "debug", "ping once");
+  emit_log(&h, "log::ping", url);
   ping(url).await.into_ta_result()
 }
 

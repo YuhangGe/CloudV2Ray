@@ -11,6 +11,7 @@ export function useLogListen() {
       listen('ping::fail', () =>
         appendLog('[ping] ==> 服务器响应异常，可能是竞价实例被回收，请刷新主机信息后重新购买'),
       ),
+      listen('log::ping', (ev) => appendLog(`[ping] ==> ${ev.payload}`)),
       listen('log::v2ray', (ev) => appendLog(`[v2ray] ==> ${ev.payload}`)),
     ]).then((fns) => unlisenArray.push(...fns));
     return () => {
