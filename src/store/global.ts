@@ -5,7 +5,6 @@ import type { CVMInstance } from '@/service/tencent';
 export interface GlobalStore {
   settings: Settings;
   instance?: CVMInstance;
-  agentInstalled?: boolean;
 }
 
 function getLs<P extends keyof GlobalStore, T = string>(key: P) {

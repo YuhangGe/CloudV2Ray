@@ -32,14 +32,19 @@ export async function loadInstance(id?: string) {
 }
 
 export async function waitInstanceReady(inst: CVMInstance) {
-  while (inst.InstanceState !== 'RUNNING' || !inst.PublicIpAddresses?.[0]) {
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
     await new Promise((res) => setTimeout(res, 1000));
     const [err, res] = await loadInstance(inst.InstanceId);
     if (!err && res.InstanceSet.length) {
       inst = res.InstanceSet[0];
     }
+    if (inst.InstanceState !== 'RUNNING' || !inst.PublicIpAddresses?.[0]) {
+      appendLog('[agent] ==> Remote instance not ready. Try again.');
+    } else {
+      return inst;
+    }
   }
-  return inst;
 }
 
 export async function waitInstanceAutomationAgentReady(inst: CVMInstance) {
@@ -54,6 +59,7 @@ export async function waitInstanceAutomationAgentReady(inst: CVMInstance) {
         return true;
       }
     }
+    appendLog('[agent] ==> Automation Tool on instance not ready. Try again.');
     await new Promise((res) => setTimeout(res, 1000));
   }
 }

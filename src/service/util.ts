@@ -100,7 +100,12 @@ export function renderTpl(tpl: string, ctx: Record<string, unknown>) {
   return tpl;
 }
 
-export function loadingMessage(title: string) {
+export interface LoadingMessage {
+  update: (title: string) => void;
+  end: (title: string, type?: 'success' | 'error') => void;
+  close: () => void;
+}
+export function loadingMessage(title: string): LoadingMessage {
   const key = uid();
   void message.open({
     key,
@@ -117,7 +122,7 @@ export function loadingMessage(title: string) {
         type: 'loading',
       });
     },
-    end(title: string, type: 'success' | 'error' = 'success') {
+    end(title: string, type = 'success') {
       void message.open({
         key,
         duration: 4,

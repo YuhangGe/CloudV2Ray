@@ -1,7 +1,6 @@
 import { App as AntApp, Button, Spin, Tooltip } from 'antd';
 import { Suspense, lazy, useEffect, useState, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import imgLogo from '../src-tauri/icons/128x128.png';
 import { cs, useQuery } from './service/util';
 import { globalStore } from './store/global';
 import { useLogListen } from './views/logview/listen';
@@ -13,6 +12,8 @@ import {
   pingV2RayOnce,
   startV2RayCore,
 } from './views/instance/helper';
+import { installStore } from './store/install';
+import imgLogo from '@/assets/logo-128x128.png';
 
 const InstanceView = lazy(() => import('./views/instance'));
 const SettingsView = lazy(() => import('./views/settings'));
@@ -62,7 +63,7 @@ export const Layout: FC = () => {
     if (!(await pingV2RayOnce(inst))) {
       return;
     }
-    globalStore.set('agentInstalled', true);
+    installStore.set('installed', true);
     appendLog('[ping] ==> 开始定时 Ping 服务');
     void pingV2RayInterval();
     void startV2RayCore();
@@ -78,7 +79,7 @@ export const Layout: FC = () => {
         void message.error(`${ex}`);
       })
       .finally(() => {
-        if (!globalStore.get('instance') || !globalStore.get('agentInstalled')) {
+        if (!globalStore.get('instance') || !installStore.get('installed')) {
           setView('instance');
         }
         setLoaded(true);

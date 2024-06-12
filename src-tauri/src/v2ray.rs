@@ -8,7 +8,11 @@ use crate::util::{emit_log, get_platform_zip_file};
 
 pub async fn ping(url: &str) -> anyhow::Result<String> {
   let client = reqwest::Client::new();
-  let res = client.post(url).send().await?;
+  let res = client
+    .post(url)
+    .timeout(Duration::from_secs(3))
+    .send()
+    .await?;
   let text = res.text().await?;
   Ok(text)
 }
@@ -31,7 +35,7 @@ async fn start_v2ray_server(
   h: AppHandle,
   state: State<'_, V2RayManager>,
 ) -> anyhow::Result<String> {
-  emit_log(&h, "log::v2ray","starting v2ray core server...");
+  emit_log(&h, "log::v2ray", "starting v2ray core server...");
   let v2ray_proc = state.v2ray_proc.clone();
   if let Some(mut proc) = v2ray_proc.lock().await.take() {
     // 如果存在旧的 v2ray 进程，先关闭。
@@ -66,7 +70,7 @@ async fn start_v2ray_server(
 
   let mut proc = command.spawn()?;
   let pid = proc.id().unwrap();
-  emit_log(&h, "log::v2ray",&format!("v2ray core pid: {}", pid));
+  emit_log(&h, "log::v2ray", &format!("v2ray core pid: {}", pid));
 
   tokio::task::spawn(async move {
     let stdo = proc.stdout.take().unwrap();

@@ -1,43 +1,21 @@
 import { Button } from 'antd';
-import { useState, type FC } from 'react';
-import {
-  installV2RayAgent,
-  pingV2RayInterval,
-  startV2RayCore,
-  waitInstanceAutomationAgentReady,
-} from './helper';
+import { type FC } from 'react';
 import { globalStore } from '@/store/global';
-import { loadingMessage } from '@/service/util';
+import { installStore, installV2RayAgentOnInstance } from '@/store/install';
 
 export const Install: FC = () => {
-  const [agentInstalled, setAgentInstalled] = globalStore.useStore('agentInstalled');
-
-  const [installing, setInstalling] = useState(false);
-  const doInstall = async () => {
-    const inst = globalStore.get('instance');
-    if (!inst) return;
-    setInstalling(true);
-    const msg = loadingMessage('正在等待远程主机自动化助手上线...');
-    await waitInstanceAutomationAgentReady(inst);
-    msg.update('正在远程主机上安装 V2Ray...');
-    const x = await installV2RayAgent(inst);
-    setInstalling(false);
-    if (!x) {
-      void msg.end('远程主机 V2Ray 安装失败！', 'error');
-    } else {
-      void msg.end('远程主机 V2Ray 安装完成！');
-      setAgentInstalled(true);
-      void pingV2RayInterval();
-      void startV2RayCore();
-    }
-  };
+  const [agentInstalled] = installStore.useStore('installed');
+  const [installing] = installStore.useStore('installing');
 
   return (
     <Button
       disabled={agentInstalled}
       loading={installing}
       onClick={() => {
-        void doInstall();
+        const inst = globalStore.get('instance');
+        if (inst) {
+          void installV2RayAgentOnInstance(inst);
+        }
       }}
       className='text-xs'
       size='small'

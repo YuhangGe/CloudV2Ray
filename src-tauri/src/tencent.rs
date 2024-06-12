@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use anyhow_tauri::{IntoTAResult, TAResult};
 use chrono::Utc;
 use hmac::digest::Output;
@@ -86,6 +88,7 @@ impl TencentCloudClient {
       .post(format!("https://{}.tencentcloudapi.com", self.service))
       .headers(headers)
       .body(body)
+      .timeout(Duration::from_secs(10))
       .send()
       .await?;
     let status = resp.status();

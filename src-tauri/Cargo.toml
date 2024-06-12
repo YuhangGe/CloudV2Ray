@@ -31,8 +31,7 @@ once_cell = "1.19"
 uuid = { version = "1.8", features = ["v4"] }
 zip-extract = "0.1.3"
 tokio= {version = "*", features = ["process"] }
-log = "0.4"
-thiserror = "1.0"
+
 
 [target.'cfg(target_os = "macos")'.dependencies]
 interfaces = "0.0.9"
