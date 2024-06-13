@@ -19,6 +19,7 @@ pub async fn ping(url: &str) -> anyhow::Result<String> {
     .await?;
   let text = res.text().await?;
   Ok(text)
+  // Ok("".into())
 }
 
 pub struct V2RayManager {

@@ -34,7 +34,7 @@ pub const fn get_platform_zip_file() -> &'static str {
       "resources/v2ray-macos-x64.zip"
     }
   } else if cfg!(target_os = "android") {
-    if cfg!(target_arch = "arm") {
+    if cfg!(target_arch = "aarch64") {
       "resources/v2ray-android-arm64.zip"
     } else {
       ""

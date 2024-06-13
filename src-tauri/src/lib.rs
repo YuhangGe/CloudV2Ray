@@ -5,13 +5,11 @@ mod util;
 mod v2ray;
 
 use sysproxy::{tauri_is_sysproxy_enabled, tauri_set_sysproxy};
-use tauri::image::Image;
-use tauri::menu::{Menu, PredefinedMenuItem};
-use tauri::tray::MouseButton;
 #[cfg(not(target_os = "android"))]
 use tauri::{
-  // menu::{Menu, PredefinedMenuItem},
-  tray::{TrayIconBuilder, TrayIconEvent},
+  image::Image,
+  menu::{Menu, PredefinedMenuItem},
+  tray::{MouseButton, TrayIconBuilder, TrayIconEvent},
 };
 use tauri::{AppHandle, Manager, WebviewWindowBuilder};
 use tauri_plugin_dialog::DialogExt;
@@ -94,14 +92,15 @@ pub fn run() {
         app.dialog().message("不支持当前平台！").blocking_show();
         std::process::exit(-1);
       }
-      if let Err(e) = extract_v2ray_if_need(app.handle()) {
-        eprintln!("{}", e);
-        app.dialog().message("解压 V2Ray 异常").blocking_show();
-        std::process::exit(-1);
-      }
 
       #[cfg(not(target_os = "android"))]
       {
+        if let Err(e) = extract_v2ray_if_need(app.handle()) {
+          eprintln!("{}", e);
+          app.dialog().message("解压 V2Ray 异常").blocking_show();
+          std::process::exit(-1);
+        }
+
         let tray_menu = Menu::with_items(
           app.handle(),
           &[&PredefinedMenuItem::quit(app.handle(), Some("退出"))?],
