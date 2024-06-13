@@ -5,6 +5,7 @@ import type { CVMInstance } from '@/service/tencent';
 export interface GlobalStore {
   settings: Settings;
   instance?: CVMInstance;
+  v2rayState: 'NOT_INSTALLED' | 'INSTALLING' | 'INSTALLED';
 }
 
 function getLs<P extends keyof GlobalStore, T = string>(key: P) {
@@ -17,6 +18,7 @@ export const globalStore = createStore<GlobalStore>({
     ...DefaultSettings,
     ...getLs('settings'),
   },
+  v2rayState: 'NOT_INSTALLED',
 });
 
 ['settings'].forEach((prop) => {

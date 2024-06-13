@@ -128,7 +128,6 @@ export async function pingV2RayOnce(inst: CVMInstance) {
   try {
     const res = await invoke('tauri_ping_v2ray_once', {
       url: `http://${ip}:2081/ping?token=${settings.token}`,
-      token: settings.token,
     });
     return res === 'pong!';
   } catch (ex) {
@@ -144,11 +143,10 @@ export async function pingV2RayInterval() {
   const ip = inst.PublicIpAddresses?.[0];
   if (!ip) return false;
   try {
-    const res = await invoke('tauri_ping_v2ray_interval', {
+    await invoke('tauri_ping_v2ray_interval', {
       url: `http://${ip}:2081/ping?token=${settings.token}`,
-      token: settings.token,
     });
-    return res === 'pong!';
+    return true;
   } catch (ex) {
     console.error(ex);
     return false;

@@ -22,11 +22,14 @@ use tencent::{
 };
 use test::tauri_test;
 use util::get_platform_zip_file;
-use util::{tauri_exit_process, tauri_open_devtools, tauri_generate_uuid};
+use util::{tauri_exit_process, tauri_generate_uuid, tauri_open_devtools};
 use v2ray::extract_v2ray_if_need;
 use v2ray::init_v2ray_manager;
 use v2ray::V2RayManager;
-use v2ray::{tauri_ping_v2ray_interval, tauri_ping_v2ray_once, tauri_start_v2ray_server};
+use v2ray::{
+  tauri_ping_v2ray_delay, tauri_ping_v2ray_interval, tauri_ping_v2ray_once,
+  tauri_start_v2ray_server,
+};
 
 const APP_TITLE: &str = "CloudV2Ray - 基于云计算的 V2Ray 客户端";
 
@@ -74,6 +77,7 @@ pub fn run() {
       tauri_call_tencent_bill_api,
       tauri_init_tencent_bill_client,
       tauri_ping_v2ray_once,
+      tauri_ping_v2ray_delay,
       tauri_ping_v2ray_interval,
       tauri_start_v2ray_server,
       tauri_generate_uuid,

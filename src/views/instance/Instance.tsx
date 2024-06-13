@@ -1,11 +1,12 @@
 import { Button, Tag, message } from 'antd';
-import { useState, type FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { loadInstance } from './helper';
 import { globalStore } from '@/store/global';
 import { copyToClipboard } from '@/service/util';
 
 export const Instance: FC = () => {
   const [inst, setInst] = globalStore.useStore('instance');
+  const [v2rayState] = globalStore.useStore('v2rayState');
   const [loading, setLoading] = useState(false);
 
   const loadInst = async (id?: string) => {
@@ -16,6 +17,27 @@ export const Instance: FC = () => {
       setInst(undefined);
     } else {
       setInst(res.InstanceSet[0]);
+    }
+  };
+
+  useEffect(() => {
+    if (inst?.InstanceState === 'TERMINATING') {
+      setTimeout(() => {
+        void loadInst(inst.InstanceId);
+      }, 2000);
+    }
+  }, [inst]);
+
+  const status = () => {
+    if (!inst) return '-';
+    if (inst.InstanceState === 'PENDING') {
+      return '创建中...';
+    } else if (inst.InstanceState === 'RUNNING') {
+      if (v2rayState === 'INSTALLING') return '安装 V2Ray 中...';
+      else if (v2rayState === 'INSTALLED') return 'V2Ray 正常运行';
+      else return '待安装 V2Ray';
+    } else {
+      return inst.InstanceState;
     }
   };
 
@@ -42,7 +64,7 @@ export const Instance: FC = () => {
         <>
           <div className='flex items-center gap-2'>
             <span className='whitespace-nowrap'>主机状态：</span>
-            <Tag>{inst.InstanceState}</Tag>
+            <Tag>{status()}</Tag>
           </div>
           <div className='flex items-center gap-2'>
             <span className='whitespace-nowrap'>公网地址：</span>

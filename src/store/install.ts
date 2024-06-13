@@ -1,4 +1,3 @@
-import { createStore } from 'lrhs';
 import { globalStore } from './global';
 import type { LoadingMessage } from '@/service/util';
 import { loadingMessage } from '@/service/util';
@@ -12,32 +11,19 @@ import {
   waitInstanceAutomationAgentReady,
   waitInstanceReady,
 } from '@/views/instance/helper';
-
-export interface InstallStore {
-  installing: boolean;
-  installed: boolean;
-}
-
-export const installStore = createStore<InstallStore>({
-  installing: false,
-  installed: false,
-});
-
-export const createInstanceAndInstallV2Ray = async (options?: { onEnd: () => void }) => {
+import { message } from '@/service/message';
+const abort = (msg: LoadingMessage) => {
+  globalStore.set('v2rayState', 'NOT_INSTALLED');
+  msg.close();
+};
+export const createInstanceAndInstallV2Ray = async () => {
   const msg = loadingMessage('正在创建主机...');
 
-  const final = () => {
-    installStore.set('installing', false);
-    msg.close();
-    options?.onEnd();
-  };
-  installStore.set('installing', true);
+  globalStore.set('v2rayState', 'INSTALLING');
   const deps = await loadInstanceDependentResources();
-  if (!deps) {
-    return final();
-  }
+  if (!deps) return abort(msg);
   const [err, res] = await CreateInstance(deps);
-  if (err) return final();
+  if (err) return abort(msg);
   globalStore.set('instance', res);
   msg.update('正在等待主机启动...');
   const instWithEip = await waitInstanceReady(res);
@@ -52,15 +38,21 @@ export const installV2RayAgentOnInstance = async (inst: CVMInstance, msg?: Loadi
     msg.update('正在等待远程主机自动化助手上线...');
   }
   await waitInstanceAutomationAgentReady(inst);
-  msg.update('正在远程主机上安装 V2Ray...');
+  msg.update('正在远程主机上安装 v2ray...');
   const x = await installV2RayAgent(inst);
-  installStore.set('installing', false);
   if (!x) {
-    msg.end('远程主机安装 V2Ray 失败！请尝试重新安装。', 'error');
+    abort(msg);
+    void message.error('远程主机安装 v2ray 失败！请尝试重新安装。');
+    return;
+  }
+  await pingV2RayInterval();
+  const r = await startV2RayCore();
+  if (!r) {
+    abort(msg);
+    void message.error('启动本地 v2ray core 失败，请尝试退出后重启 CloudV2Ray。');
+    return;
   } else {
-    installStore.set('installed', true);
-    void pingV2RayInterval();
-    void startV2RayCore();
+    globalStore.set('v2rayState', 'INSTALLED');
     msg.end('远程主机安装 V2Ray 完成，已启动本地 v2ray-core 代理！');
   }
 };

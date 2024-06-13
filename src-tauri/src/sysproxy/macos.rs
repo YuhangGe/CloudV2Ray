@@ -1,4 +1,3 @@
-use log::debug;
 use std::net::{SocketAddr, UdpSocket};
 use std::{process::Command, str::from_utf8};
 
@@ -9,42 +8,42 @@ type Result<T> = anyhow::Result<T>;
 impl Sysproxy {
   pub fn get_system_proxy() -> anyhow::Result<Sysproxy> {
     let service = default_network_service().or_else(|e| {
-      debug!("Failed to get network service: {:?}", e);
+      eprintln!("Failed to get network service: {:?}", e);
       default_network_service_by_ns()
     });
     if let Err(e) = service {
-      debug!("Failed to get network service by networksetup: {:?}", e);
+      eprintln!("Failed to get network service by networksetup: {:?}", e);
       return Err(e);
     }
     let service = service.unwrap();
     let service = service.as_str();
 
     let mut socks = Sysproxy::get_socks(service)?;
-    debug!("Getting SOCKS proxy: {:?}", socks);
+    // debug!("Getting SOCKS proxy: {:?}", socks);
 
-    let http = Sysproxy::get_http(service)?;
-    debug!("Getting HTTP proxy: {:?}", http);
+    // let http = Sysproxy::get_http(service)?;
+    // // debug!("Getting HTTP proxy: {:?}", http);
 
-    let https = Sysproxy::get_https(service)?;
-    debug!("Getting HTTPS proxy: {:?}", https);
+    // let https = Sysproxy::get_https(service)?;
+    // // debug!("Getting HTTPS proxy: {:?}", https);
 
     let bypass = Sysproxy::get_bypass(service)?;
-    debug!("Getting bypass domains: {:?}", bypass);
+    // debug!("Getting bypass domains: {:?}", bypass);
 
     socks.bypass = bypass;
 
-    if !socks.enable {
-      if http.enable {
-        socks.enable = true;
-        socks.host = http.host;
-        socks.port = http.port;
-      }
-      if https.enable {
-        socks.enable = true;
-        socks.host = https.host;
-        socks.port = https.port;
-      }
-    }
+    // if !socks.enable {
+    //   if http.enable {
+    //     socks.enable = true;
+    //     socks.host = http.host;
+    //     socks.port = http.port;
+    //   }
+    //   if https.enable {
+    //     socks.enable = true;
+    //     socks.host = https.host;
+    //     socks.port = https.port;
+    //   }
+    // }
 
     Ok(socks)
   }
@@ -56,16 +55,16 @@ impl Sysproxy {
       enable: enabled,
     };
     let service = default_network_service().or_else(|e| {
-      debug!("Failed to get network service: {:?}", e);
+      eprintln!("Failed to get network service: {:?}", e);
       default_network_service_by_ns()
     });
     if let Err(e) = service {
-      debug!("Failed to get network service by networksetup: {:?}", e);
+      eprintln!("Failed to get network service by networksetup: {:?}", e);
       return Err(e);
     }
     let service = service.unwrap();
     let service = service.as_str();
-    debug!("Setting SOCKS proxy");
+    // debug!("Setting SOCKS proxy");
     proxy.set_socks(service)?;
     Ok(())
   }
@@ -97,13 +96,13 @@ impl Sysproxy {
   //   Ok(())
   // }
 
-  pub fn get_http(service: &str) -> Result<Sysproxy> {
-    get_proxy(ProxyType::HTTP, service)
-  }
+  // pub fn get_http(service: &str) -> Result<Sysproxy> {
+  //   get_proxy(ProxyType::HTTP, service)
+  // }
 
-  pub fn get_https(service: &str) -> Result<Sysproxy> {
-    get_proxy(ProxyType::HTTPS, service)
-  }
+  // pub fn get_https(service: &str) -> Result<Sysproxy> {
+  //   get_proxy(ProxyType::HTTPS, service)
+  // }
 
   pub fn get_socks(service: &str) -> Result<Sysproxy> {
     get_proxy(ProxyType::SOCKS, service)
@@ -146,16 +145,16 @@ impl Sysproxy {
 
 #[derive(Debug)]
 enum ProxyType {
-  HTTP,
-  HTTPS,
+  // HTTP,
+  // HTTPS,
   SOCKS,
 }
 
 impl ProxyType {
   fn to_target(&self) -> &'static str {
     match self {
-      ProxyType::HTTP => "webproxy",
-      ProxyType::HTTPS => "securewebproxy",
+      // ProxyType::HTTP => "webproxy",
+      // ProxyType::HTTPS => "securewebproxy",
       ProxyType::SOCKS => "socksfirewallproxy",
     }
   }

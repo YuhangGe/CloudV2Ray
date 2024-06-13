@@ -2,7 +2,11 @@ use std::{io::Cursor, sync::Arc, time::Duration};
 
 use anyhow_tauri::{IntoTAResult, TAResult};
 use tauri::{AppHandle, Manager, State};
-use tokio::{io::AsyncBufReadExt, process::Child, sync::Mutex};
+use tokio::{
+  io::{AsyncBufReadExt, AsyncRead},
+  process::Child,
+  sync::Mutex,
+};
 
 use crate::util::{emit_log, get_platform_zip_file};
 
@@ -30,6 +34,25 @@ impl V2RayManager {
   }
 }
 
+async fn read<R: AsyncRead + Unpin>(stdo: R, h: &AppHandle) {
+  let reader = tokio::io::BufReader::new(stdo);
+  let mut lines_reader = reader.lines();
+  loop {
+    match lines_reader.next_line().await {
+      Ok(line) => {
+        if let Some(l) = line {
+          emit_log(h, "log::v2ray", &l);
+        } else {
+          break;
+        }
+      }
+      Err(e) => {
+        eprintln!("{}", e);
+        break;
+      }
+    }
+  }
+}
 async fn start_v2ray_server(
   config: &str,
   h: AppHandle,
@@ -63,6 +86,8 @@ async fn start_v2ray_server(
   command.arg("-c");
   command.arg("./config.json");
   command.stdout(std::process::Stdio::piped());
+  command.stderr(std::process::Stdio::piped());
+  command.stdin(std::process::Stdio::piped());
   command.current_dir(v2ray_bin_dir);
 
   #[cfg(target_os = "windows")]
@@ -73,29 +98,15 @@ async fn start_v2ray_server(
   emit_log(&h, "log::v2ray", &format!("v2ray core pid: {}", pid));
 
   tokio::task::spawn(async move {
+    drop(proc.stdin.take());
     let stdo = proc.stdout.take().unwrap();
+    let stde = proc.stderr.take().unwrap();
     {
       v2ray_proc.clone().lock().await.replace(proc);
     }
 
+    tokio::join!(read(stdo, &h), read(stde, &h));
     // let mut buffer = Vec::<u8>::with_capacity(10);
-    let reader = tokio::io::BufReader::new(stdo);
-    let mut lines_reader = reader.lines();
-    loop {
-      match lines_reader.next_line().await {
-        Ok(line) => {
-          if let Some(l) = line {
-            emit_log(&h, "log::v2ray", &l);
-          } else {
-            break;
-          }
-        }
-        Err(e) => {
-          eprintln!("{}", e);
-          break;
-        }
-      }
-    }
 
     {
       v2ray_proc.clone().lock().await.take();
@@ -171,6 +182,12 @@ pub async fn tauri_ping_v2ray_interval(
 
 #[tauri::command]
 pub async fn tauri_ping_v2ray_once(url: &str, h: AppHandle) -> TAResult<String> {
+  emit_log(&h, "log::ping", url);
+  ping(url).await.into_ta_result()
+}
+
+#[tauri::command]
+pub async fn tauri_ping_v2ray_delay(url: &str, h: AppHandle) -> TAResult<String> {
   emit_log(&h, "log::ping", url);
   ping(url).await.into_ta_result()
 }

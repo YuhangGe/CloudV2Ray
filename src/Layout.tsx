@@ -12,7 +12,6 @@ import {
   pingV2RayOnce,
   startV2RayCore,
 } from './views/instance/helper';
-import { installStore } from './store/install';
 import imgLogo from '@/assets/logo-128x128.png';
 
 const InstanceView = lazy(() => import('./views/instance'));
@@ -63,10 +62,11 @@ export const Layout: FC = () => {
     if (!(await pingV2RayOnce(inst))) {
       return;
     }
-    installStore.set('installed', true);
+    globalStore.set('v2rayState', 'INSTALLED');
     appendLog('[ping] ==> 开始定时 Ping 服务');
-    void pingV2RayInterval();
-    void startV2RayCore();
+    if (!(await pingV2RayInterval()) || !(await startV2RayCore())) {
+      void message.error('本地 v2ray-core 启动失败，请尝试退出后重启 CloudV2Ray。');
+    }
   };
   useEffect(() => {
     const settings = globalStore.get('settings');
@@ -79,7 +79,7 @@ export const Layout: FC = () => {
         void message.error(`${ex}`);
       })
       .finally(() => {
-        if (!globalStore.get('instance') || !installStore.get('installed')) {
+        if (!globalStore.get('instance') || globalStore.get('v2rayState') !== 'INSTALLED') {
           setView('instance');
         }
         setLoaded(true);
