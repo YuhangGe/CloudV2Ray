@@ -1,5 +1,6 @@
 import { Button, Popconfirm } from 'antd';
 import { useState, type FC } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 import { DelayDestroy } from './DelayDestroy';
 import { TerminateInstance } from '@/service/tencent';
 import { globalStore } from '@/store/global';
@@ -17,6 +18,7 @@ export const Control: FC = () => {
     setDestroing(false);
     if (!err) {
       setInst(undefined);
+      await invoke('tauri_stop_v2ray_server');
     }
   };
 

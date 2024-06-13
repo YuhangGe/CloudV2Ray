@@ -1,5 +1,5 @@
-import { App as AntApp, Button, Spin, Tooltip } from 'antd';
-import { Suspense, lazy, useEffect, useState, type FC } from 'react';
+import { App as AntApp, Button, Dropdown, Spin, Tooltip } from 'antd';
+import { Suspense, lazy, useEffect, useMemo, useState, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { cs, useQuery } from './service/util';
 import { globalStore } from './store/global';
@@ -51,6 +51,9 @@ export const Layout: FC = () => {
     'view',
     settings.secretKey && settings.instanceType ? 'overview' : 'settings',
   );
+  const title = useMemo(() => {
+    return ViewItems.find((it) => it.key === view)?.label;
+  }, [view]);
 
   useLogListen();
 
@@ -88,7 +91,7 @@ export const Layout: FC = () => {
 
   return loaded ? (
     <>
-      <div className='flex w-28 flex-shrink-0 flex-col border-r border-solid border-border'>
+      <div className='flex w-28 flex-shrink-0 flex-col border-r border-solid border-border max-sm:hidden'>
         <div className='pl-5 pt-[5px]'>
           <img src={imgLogo} className='size-16' />
         </div>
@@ -129,26 +132,59 @@ export const Layout: FC = () => {
           />
         </Tooltip>
       </div>
-      {view === 'overview' && (
-        <Suspense>
-          <OverviewView />
-        </Suspense>
-      )}
-      {view === 'instance' && (
-        <Suspense>
-          <InstanceView />
-        </Suspense>
-      )}
-      {view === 'settings' && (
-        <Suspense>
-          <SettingsView />
-        </Suspense>
-      )}
-      {view === 'logs' && (
-        <Suspense>
-          <LogView />
-        </Suspense>
-      )}
+      <div className='flex flex-1 flex-col overflow-x-hidden px-6 pt-6'>
+        <div className='mb-4 flex items-center sm:mb-5'>
+          <div className='flex items-center text-2xl sm:hidden'>
+            <img src={imgLogo} className='block size-10' />
+            <span className='ml-2 font-medium'>CloudV2Ray</span>
+            <span className='mx-2'>-</span>
+          </div>
+          <div className='text-2xl max-sm:text-secondary-text'>{title}</div>
+          <div className='flex-1' />
+          <Dropdown
+            trigger={['click']}
+            menu={{
+              items: ViewItems.map((item) => ({
+                label: (
+                  <div className='flex items-center gap-3 py-2 pl-1 pr-2'>
+                    <span className='translate-y-0.5'>{item.icon}</span>
+                    {item.label}
+                  </div>
+                ),
+                key: item.key,
+              })),
+              onClick(info) {
+                setView(info.key);
+              },
+            }}
+          >
+            <Button
+              className='sm:hidden'
+              icon={<span className='icon-[ant-design--menu-outlined]'></span>}
+            />
+          </Dropdown>
+        </div>
+        {view === 'overview' && (
+          <Suspense>
+            <OverviewView />
+          </Suspense>
+        )}
+        {view === 'instance' && (
+          <Suspense>
+            <InstanceView />
+          </Suspense>
+        )}
+        {view === 'settings' && (
+          <Suspense>
+            <SettingsView />
+          </Suspense>
+        )}
+        {view === 'logs' && (
+          <Suspense>
+            <LogView />
+          </Suspense>
+        )}
+      </div>
     </>
   ) : (
     <div className='flex w-full items-center justify-center'>

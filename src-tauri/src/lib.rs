@@ -19,16 +19,13 @@ use tencent::{
   tauri_init_tencent_tat_client, tauri_init_tencent_vpc_client,
 };
 use test::tauri_test;
-use util::get_platform_zip_file;
-use util::{tauri_exit_process, tauri_generate_uuid, tauri_open_devtools};
-use v2ray::extract_v2ray_if_need;
-use v2ray::init_v2ray_manager;
-use v2ray::V2RayManager;
+use util::{get_platform_zip_file, tauri_exit_process, tauri_generate_uuid, tauri_open_devtools};
 use v2ray::{
-  tauri_ping_v2ray_delay, tauri_ping_v2ray_interval, tauri_ping_v2ray_once,
-  tauri_start_v2ray_server,
+  extract_v2ray_if_need, init_v2ray_manager, tauri_ping_v2ray_delay, tauri_ping_v2ray_interval,
+  tauri_ping_v2ray_once, tauri_start_v2ray_server, tauri_stop_v2ray_server, V2RayManager,
 };
 
+#[cfg(not(target_os = "android"))]
 const APP_TITLE: &str = "CloudV2Ray - 基于云计算的 V2Ray 客户端";
 
 fn open_window(app: &AppHandle) {
@@ -78,6 +75,7 @@ pub fn run() {
       tauri_ping_v2ray_delay,
       tauri_ping_v2ray_interval,
       tauri_start_v2ray_server,
+      tauri_stop_v2ray_server,
       tauri_generate_uuid,
       tauri_open_devtools,
       tauri_exit_process,

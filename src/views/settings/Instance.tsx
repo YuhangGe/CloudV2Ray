@@ -91,7 +91,10 @@ export const InstancePanel: FC<{
       }
     });
   }, [region]);
-  const resetPwd = () => form.setFieldValue('loginPwd', generateStrongPassword());
+  const resetPwd = () => {
+    form.setFieldValue('loginPwd', generateStrongPassword());
+    void form.validateFields(['loginPwd']); // clear error
+  };
 
   useEffect(() => {
     if (!settings.loginPwd) {

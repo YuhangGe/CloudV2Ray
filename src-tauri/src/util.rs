@@ -1,8 +1,10 @@
 use std::process;
 
 use anyhow_tauri::TAResult;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Manager, State};
 use uuid::Uuid;
+
+use crate::v2ray::{stop_v2ray_server, V2RayManager};
 
 #[tauri::command]
 pub fn tauri_generate_uuid() -> TAResult<String> {
@@ -10,9 +12,11 @@ pub fn tauri_generate_uuid() -> TAResult<String> {
   Ok(id.to_string())
 }
 #[tauri::command]
-pub fn tauri_exit_process() -> TAResult<()> {
+pub async fn tauri_exit_process(state: State<'_, V2RayManager>) -> TAResult<()> {
+  stop_v2ray_server(state).await;
   process::exit(0);
 }
+
 #[tauri::command]
 pub fn tauri_open_devtools(h: AppHandle) -> TAResult<()> {
   if let Some(win) = h.get_webview_window("main") {

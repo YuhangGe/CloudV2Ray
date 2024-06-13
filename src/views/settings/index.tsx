@@ -1,17 +1,17 @@
-import { App, Button, Form, Input, Tabs, Tooltip } from 'antd';
+import { App, Button, ConfigProvider, Form, Input, Tabs, Tooltip } from 'antd';
 import { useEffect, useMemo, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Price } from '../overview/Price';
-import { Export } from './Export';
 import { InstancePanel } from './Instance';
 import type { Settings } from '@/service/settings';
 import { globalStore } from '@/store/global';
 import { copyToClipboard, generateStrongPassword, useQuery } from '@/service/util';
+import { themeStore } from '@/store/theme';
 
 const SettingsView: FC = () => {
   const [form] = Form.useForm<Settings>();
   const [settings, setSettings] = globalStore.useStore('settings');
-
+  const [underSm] = themeStore.useStore('underSm');
   const { message } = App.useApp();
   const save = () => {
     form.validateFields().then(
@@ -60,11 +60,15 @@ const SettingsView: FC = () => {
     }
   }, []);
   return (
-    <div className='flex flex-1 flex-col overflow-x-hidden px-6 pt-6'>
-      <div className='mb-4 flex items-center'>
-        <div className='mr-4 text-2xl font-medium'>配置</div>
-        {settings.secretKey && <Export />}
-      </div>
+    <ConfigProvider
+      theme={{
+        components: {
+          Form: {
+            marginLG: underSm ? 12 : 24,
+          },
+        },
+      }}
+    >
       <Tabs
         activeKey={tab}
         onChange={(t) => {
@@ -79,8 +83,9 @@ const SettingsView: FC = () => {
 
       <Form
         form={form}
+        scrollToFirstError
         initialValues={settings}
-        className='max-w-md'
+        className='max-w-md overflow-y-auto pb-4 max-sm:max-w-full'
         labelCol={{ span: 5 }}
         labelAlign='left'
       >
@@ -136,19 +141,19 @@ const SettingsView: FC = () => {
           </>
         )}
         {tab === 'instance' && <InstancePanel form={form} />}
-        <div className='flex items-center gap-8'>
-          <Button
-            type='primary'
-            onClick={() => {
-              save();
-            }}
-          >
-            保存
-          </Button>
-          {tab === 'instance' && settings.instanceType && <Price />}
-        </div>
       </Form>
-    </div>
+      <div className='my-4 flex items-center gap-8'>
+        <Button
+          type='primary'
+          onClick={() => {
+            save();
+          }}
+        >
+          保存
+        </Button>
+        {tab === 'instance' && settings.instanceType && <Price />}
+      </div>
+    </ConfigProvider>
   );
 };
 

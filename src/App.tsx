@@ -20,6 +20,7 @@ function App() {
     <ConfigProvider
       locale={antdLocale}
       theme={{
+        // cssVar: true,
         algorithm: theme === 'dark' ? AntTheme.darkAlgorithm : AntTheme.defaultAlgorithm,
       }}
     >

@@ -72,53 +72,47 @@ const OverviewView: FC = () => {
     );
   }, []);
   return (
-    <div className='relative flex-1 overflow-x-hidden px-6 pt-5'>
-      <div className='mb-7 mr-4 mt-1 flex items-center justify-between'>
-        <span className='text-2xl font-medium'>概览</span>
+    <div className='mt-2 flex flex-col gap-4'>
+      <div className='flex items-center gap-2'>
+        <span>远程地址：</span>
+        <Tag className='font-mono'>
+          {inst ? `vmess://${inst.PublicIpAddresses?.[0] ?? '-'}:2080` : '-'}
+        </Tag>
+        {inst && <ShareCode inst={inst} />}
       </div>
-
-      <div className='flex flex-col gap-4'>
-        <div className='flex items-center gap-2'>
-          <span>远程地址：</span>
-          <Tag className='font-mono'>
-            {inst ? `vmess://${inst.PublicIpAddresses?.[0] ?? '-'}:2080` : '-'}
-          </Tag>
-          {inst && <ShareCode inst={inst} />}
-        </div>
-        <div className='flex gap-2'>
-          <span className='relative top-0.5'>本地代理：</span>
-          {inst ? (
-            <div className='flex flex-col gap-1 font-mono'>
-              <Tag className='font-mono'>
-                <span className='inline-block w-10'>socks5</span>
-                {'://127.0.0.1:7890'}
-              </Tag>
-              {/* <Tag className='font-mono'>
+      <div className='flex gap-2'>
+        <span className='relative top-0.5'>本地代理：</span>
+        {inst ? (
+          <div className='flex flex-col gap-1 font-mono'>
+            <Tag className='font-mono'>
+              <span className='inline-block w-10'>socks5</span>
+              {'://127.0.0.1:7890'}
+            </Tag>
+            {/* <Tag className='font-mono'>
                 <span style={{ letterSpacing: '0.38em' }} className='inline-block w-10'>
                   http
                 </span>
                 {'://127.0.0.1:7891'}
               </Tag> */}
-            </div>
-          ) : (
-            '-'
-          )}
-        </div>
-        <div className='flex items-center gap-2'>
-          <span>系统代理：</span>
-          <Switch
-            loading={toggling}
-            value={sysproxy}
-            onChange={(v) => {
-              void toggleSysproxy(v);
-            }}
-          ></Switch>
-          {sysproxy ? '已开启' : '未开启'}
-        </div>
-        <Bandwidth />
-        <Balance />
-        <Price />
+          </div>
+        ) : (
+          '-'
+        )}
       </div>
+      <div className='flex items-center gap-2'>
+        <span>系统代理：</span>
+        <Switch
+          loading={toggling}
+          value={sysproxy}
+          onChange={(v) => {
+            void toggleSysproxy(v);
+          }}
+        ></Switch>
+        {sysproxy ? '已开启' : '未开启'}
+      </div>
+      <Bandwidth />
+      <Balance />
+      <Price />
     </div>
   );
 };

@@ -54,6 +54,15 @@ async fn read<R: AsyncRead + Unpin>(stdo: R, h: &AppHandle) {
     }
   }
 }
+
+pub async fn stop_v2ray_server(state: State<'_, V2RayManager>) {
+  let v2ray_proc = state.v2ray_proc.clone();
+  if let Some(mut proc) = v2ray_proc.lock().await.take() {
+    // 如果存在旧的 v2ray 进程，先关闭。
+    let _ = proc.kill().await;
+  };
+}
+
 async fn start_v2ray_server(
   config: &str,
   h: AppHandle,
@@ -202,4 +211,14 @@ pub async fn tauri_start_v2ray_server(
   start_v2ray_server(config, handle, state)
     .await
     .into_ta_result()
+}
+
+#[tauri::command]
+pub async fn tauri_stop_v2ray_server(
+  handle: AppHandle,
+  state: State<'_, V2RayManager>,
+) -> TAResult<()> {
+  stop_v2ray_server(state).await;
+  emit_log(&handle, "log::v2ray", "v2ray core server stopped.");
+  Ok(())
 }

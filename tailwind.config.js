@@ -10,6 +10,9 @@ export default {
   darkMode: ['selector'],
   content: ['./src/**/*.{ts,tsx,html}', './index.html'],
   theme: {
+    screens: {
+      sm: '580px',
+    },
     colors: {
       ...themeColors,
       black: '#000',
