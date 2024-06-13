@@ -40,6 +40,8 @@ pub const fn get_platform_zip_file() -> &'static str {
   } else if cfg!(target_os = "android") {
     if cfg!(target_arch = "aarch64") {
       "resources/v2ray-android-arm64.zip"
+    } else if cfg!(target_arch = "x86_64") {
+      "resources/v2ray-android-x86_64.zip"
     } else {
       ""
     }
