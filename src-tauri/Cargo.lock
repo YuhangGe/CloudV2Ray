@@ -566,12 +566,12 @@ dependencies = [
  "chrono",
  "hmac",
  "interfaces",
- "once_cell",
  "serde",
  "serde_json",
  "sha2",
  "tauri",
  "tauri-build",
+ "tauri-plugin-cloudv2ray",
  "tauri-plugin-dialog",
  "tauri-plugin-fs",
  "tauri-plugin-http",
@@ -4136,6 +4136,16 @@ dependencies = [
  "tauri-utils",
  "toml 0.8.14",
  "walkdir",
+]
+
+[[package]]
+name = "tauri-plugin-cloudv2ray"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "tauri",
+ "tauri-plugin",
+ "thiserror",
 ]
 
 [[package]]

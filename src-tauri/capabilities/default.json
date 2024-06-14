@@ -4,6 +4,7 @@
   "description": "enables the default permissions",
   "windows": ["main"],
   "permissions": [
+    "cloudv2ray:default",
     "path:default",
     "event:default",
     "window:default",

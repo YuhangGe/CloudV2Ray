@@ -142,6 +142,14 @@ export const Layout: FC = () => {
           </div>
           <div className='text-2xl max-sm:text-secondary-text'>{title}</div>
           <div className='flex-1' />
+          <Button
+            onClick={async () => {
+              const x = await invoke('plugin:cloudv2ray|ping', { value: 666 });
+              console.log(x);
+            }}
+          >
+            TEST
+          </Button>
           <Dropdown
             trigger={['click']}
             menu={{

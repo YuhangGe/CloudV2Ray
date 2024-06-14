@@ -57,6 +57,7 @@ fn open_window(app: &AppHandle) {
 pub fn run() {
   let mut app = tauri::Builder::default()
     // .plugin(tauri_plugin_fs::init())
+    .plugin(tauri_plugin_cloudv2ray::init())
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_dialog::init())
     .manage(V2RayManager::new())

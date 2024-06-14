@@ -28,5 +28,6 @@
   "iconifySearch.favorGroup": "ant-design",
   "[groovy]": {
     "editor.defaultFormatter": "NicolasVuillamy.vscode-groovy-lint"
-  }
+  },
+  "rust-analyzer.cargo.target": "x86_64-linux-android"
 }
