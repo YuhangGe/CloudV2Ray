@@ -6,7 +6,8 @@ use crate::util::emit_log;
 async fn test(h: &AppHandle) -> anyhow::Result<String> {
   let resource_path = h.path().resource_dir()?;
   emit_log(&h, "log::v2ray", &format!("{:?}", resource_path));
-
+  let x = resource_path.join("t.txt");
+  println!("exists: {}", x.exists());
   // let v2ray_bin_dir = resource_path.join("v2ray");
   // if v2ray_bin_dir.exists() {
   //   emit_log(

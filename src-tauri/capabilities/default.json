@@ -12,6 +12,11 @@
     "resources:default",
     "image:default",
     "menu:default",
-    "tray:default"
+    "tray:default",
+    {
+      "identifier": "http:default",
+      "allow": ["https://*.tencentcloudapi.com", "http://*:2081"]
+    },
+    "fs:default"
   ]
 }

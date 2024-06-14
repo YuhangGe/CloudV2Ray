@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { fetch } from '@tauri-apps/plugin-http';
 import { globalStore } from '@/store/global';
 import configTpl from '@/assets/v2ray.conf.template.json?raw';
 import {
@@ -126,15 +127,19 @@ export async function pingV2RayOnce(inst: CVMInstance) {
   const ip = inst.PublicIpAddresses?.[0];
   if (!ip) return false;
   try {
-    const res = await invoke('tauri_ping_v2ray_once', {
-      url: `http://${ip}:2081/ping?token=${settings.token}`,
-    });
-    return res === 'pong!';
+    const url = `http://${ip}:2081/ping?token=${settings.token}`;
+    appendLog(`[ping] ==> ${url}`);
+    const res = await fetch(url);
+    if (res.status !== 200) throw new Error(`bad response status: ` + res.status);
+    const txt = await res.text();
+    return txt === 'pong!';
   } catch (ex) {
     console.error(ex);
     return false;
   }
 }
+
+let pingInt = 0;
 export async function pingV2RayInterval() {
   const settings = globalStore.get('settings');
   if (!settings.token) return false;
@@ -142,15 +147,31 @@ export async function pingV2RayInterval() {
   if (!inst) return false;
   const ip = inst.PublicIpAddresses?.[0];
   if (!ip) return false;
-  try {
-    await invoke('tauri_ping_v2ray_interval', {
-      url: `http://${ip}:2081/ping?token=${settings.token}`,
-    });
-    return true;
-  } catch (ex) {
-    console.error(ex);
-    return false;
-  }
+  if (pingInt) clearInterval(pingInt);
+  pingInt = window.setInterval(
+    async () => {
+      const fail = () => {
+        appendLog('[ping] ==> 服务器响应异常，可能是竞价实例被回收，请刷新主机信息后重新购买');
+      };
+      try {
+        const res = await fetch(`http://${ip}:2081/ping?token=${settings.token}`);
+        if (res.status !== 200) {
+          return fail();
+        }
+
+        const txt = await res.text();
+        if (txt !== 'pong!') {
+          return fail();
+        }
+        appendLog('[ping] ==> 服务器正常响应');
+      } catch (ex) {
+        console.error(ex);
+        fail();
+      }
+    },
+    2 * 60 * 1000,
+  );
+  return true;
 }
 
 export async function startV2RayCore() {

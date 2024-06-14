@@ -59,6 +59,7 @@ export const Layout: FC = () => {
 
   const initialize = async () => {
     const [err, res] = await loadInstance();
+
     if (err || !res.InstanceSet.length) return;
     const inst = res.InstanceSet[0];
     globalStore.set('instance', inst);

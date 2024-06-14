@@ -1,4 +1,4 @@
-use std::{io::Cursor, sync::Arc, time::Duration};
+use std::{io::Cursor, sync::Arc};
 
 use anyhow_tauri::{IntoTAResult, TAResult};
 use tauri::{AppHandle, Manager, State};
@@ -10,26 +10,26 @@ use tokio::{
 
 use crate::util::{emit_log, get_platform_zip_file};
 
-pub async fn ping(url: &str) -> anyhow::Result<String> {
-  let client = reqwest::Client::new();
-  let res = client
-    .post(url)
-    .timeout(Duration::from_secs(3))
-    .send()
-    .await?;
-  let text = res.text().await?;
-  Ok(text)
-  // Ok("".into())
-}
+// pub async fn ping(url: &str) -> anyhow::Result<String> {
+//   let client = reqwest::Client::new();
+//   let res = client
+//     .post(url)
+//     .timeout(Duration::from_secs(3))
+//     .send()
+//     .await?;
+//   let text = res.text().await?;
+//   Ok(text)
+//   // Ok("".into())
+// }
 
 pub struct V2RayManager {
-  ping_url: Arc<Mutex<Option<String>>>,
+  // ping_url: Arc<Mutex<Option<String>>>,
   v2ray_proc: Arc<Mutex<Option<Child>>>,
 }
 impl V2RayManager {
   pub fn new() -> Self {
     Self {
-      ping_url: Arc::new(Mutex::new(None)),
+      // ping_url: Arc::new(Mutex::new(None)),
       v2ray_proc: Arc::new(Mutex::new(None)),
     }
   }
@@ -154,53 +154,41 @@ pub fn extract_v2ray_if_need(h: &AppHandle) -> anyhow::Result<()> {
   Ok(())
 }
 
-pub fn init_v2ray_manager(h: &AppHandle, state: State<V2RayManager>) {
-  // let handle = app.handle();
-  let ping_url = state.ping_url.clone();
-  let handle = h.clone();
-  tauri::async_runtime::spawn(async move {
-    loop {
-      {
-        let guard = ping_url.lock().await;
-        let url = guard.as_ref();
-        if let Some(url) = url {
-          let t = ping(url).await;
-          if !matches!(t, Ok(url) if url.eq("pong!")) {
-            // use tauri_plugin_dialog::DialogExt;
-            // handle.dialog().message("不支持当前平台！").blocking_show();
-            let _ = handle.emit("ping::fail", ());
-            // guard.take();
-          } else {
-            let _ = handle.emit("ping::ok", ());
-          }
-        }
-      } // auto drop guard
-      tokio::time::sleep(Duration::from_secs(2 * 60)).await;
-    }
-  });
-}
+// pub fn init_v2ray_manager(h: &AppHandle, state: State<V2RayManager>) {
+//   // let handle = app.handle();
+//   let ping_url = state.ping_url.clone();
+//   let handle = h.clone();
+//   tauri::async_runtime::spawn(async move {
+//     loop {
+//       {
+//         let guard = ping_url.lock().await;
+//         let url = guard.as_ref();
+//         if let Some(url) = url {
+//           let t = ping(url).await;
+//           if !matches!(t, Ok(url) if url.eq("pong!")) {
+//             // use tauri_plugin_dialog::DialogExt;
+//             // handle.dialog().message("不支持当前平台！").blocking_show();
+//             let _ = handle.emit("ping::fail", ());
+//             // guard.take();
+//           } else {
+//             let _ = handle.emit("ping::ok", ());
+//           }
+//         }
+//       } // auto drop guard
+//       tokio::time::sleep(Duration::from_secs(2 * 60)).await;
+//     }
+//   });
+// }
 
-#[tauri::command]
-pub async fn tauri_ping_v2ray_interval(
-  url: &str,
-  state: State<'_, V2RayManager>,
-) -> TAResult<String> {
-  let url = url.to_owned();
-  state.ping_url.lock().await.replace(url);
-  Ok("".into())
-}
-
-#[tauri::command]
-pub async fn tauri_ping_v2ray_once(url: &str, h: AppHandle) -> TAResult<String> {
-  emit_log(&h, "log::ping", url);
-  ping(url).await.into_ta_result()
-}
-
-#[tauri::command]
-pub async fn tauri_ping_v2ray_delay(url: &str, h: AppHandle) -> TAResult<String> {
-  emit_log(&h, "log::ping", url);
-  ping(url).await.into_ta_result()
-}
+// #[tauri::command]
+// pub async fn tauri_ping_v2ray_interval(
+//   url: &str,
+//   state: State<'_, V2RayManager>,
+// ) -> TAResult<String> {
+//   let url = url.to_owned();
+//   state.ping_url.lock().await.replace(url);
+//   Ok("".into())
+// }
 
 #[tauri::command]
 pub async fn tauri_start_v2ray_server(

@@ -1,55 +1,73 @@
 import { invoke } from '@tauri-apps/api/core';
+import { fetch } from '@tauri-apps/plugin-http';
 import { message } from './message';
 import { type InstanceDeps } from './instance';
 import { globalStore } from '@/store/global';
 
 export type ApiResult<T> = [Error] | [undefined, T];
-const inited = {
-  cvm: false,
-  vpc: false,
-  tat: false,
-  bill: false,
+const ServiceVersionMap = {
+  cvm: '2017-03-12',
+  tat: '2020-10-28',
+  vpc: '2017-03-12',
+  billing: '2018-07-09',
 };
+
 async function callTencentApi<T>({
   service,
   region,
   action,
   data,
 }: {
-  service: 'cvm' | 'tat' | 'vpc' | 'bill';
+  service: 'cvm' | 'tat' | 'vpc' | 'billing';
   region?: string;
   action: string;
   data?: Record<string, unknown>;
 }): Promise<ApiResult<T>> {
   const params = globalStore.get('settings');
-  if (!inited[service]) {
-    await invoke(`tauri_init_tencent_${service}_client`, {
-      secretId: params.secretId,
-      secretKey: params.secretKey,
-    });
-    inited[service] = true;
-  }
-  const text = await invoke<string>(`tauri_call_tencent_${service}_api`, {
-    region: region ?? params.region,
-    action,
-    body: data ? JSON.stringify(data) : '{}',
+  const timestamp = Math.floor(Date.now() / 1000);
+  const body = data ? JSON.stringify(data) : '{}';
+  const sign = await invoke<string>('tauri_calc_tencent_cloud_api_signature', {
+    secretId: params.secretId,
+    secretKey: params.secretKey,
+    service,
+    timestamp,
+    body,
   });
-  const resp = JSON.parse(text) as {
+  const host = `${service}.tencentcloudapi.com`;
+  const headers = {
+    authorization: sign,
+    ['content-type']: 'application/json',
+    host: host,
+    'X-TC-Action': action,
+    'X-TC-Version': ServiceVersionMap[service],
+    'X-TC-Timestamp': timestamp.toString(),
+    'X-TC-Region': region ?? params.region,
+  };
+  const res = await fetch('https://' + host, {
+    method: 'POST',
+    headers,
+    body,
+  });
+  if (res.status !== 200) {
+    throw new Error(`bad status code: ` + res.status);
+  }
+
+  const resData = (await res.json()) as {
     Response: {
       Error?: { Code: string; Message: string };
       RequestId: string;
     };
   };
   // eslint-disable-next-line no-console
-  console.log(`-- Tecent Clound Api -- `, action, resp);
-  const Err = resp.Response.Error;
+  console.log(`-- Tecent Clound Api -- `, action, resData);
+  const Err = resData.Response.Error;
   if (Err) {
     const err = new Error(Err.Message);
     err.name = Err.Code;
     void message.error(`${Err.Code}::${Err.Message}`, 5);
     return [err];
   }
-  return [undefined, resp.Response as T];
+  return [undefined, resData.Response as T];
 }
 export interface ApiFilter {
   Name: string;
@@ -472,7 +490,7 @@ export interface CVMBalance {
 }
 export function DescribeAccountBalance(params?: { region?: string }) {
   return callTencentApi<CVMBalance>({
-    service: 'bill',
+    service: 'billing',
     region: params?.region,
     action: 'DescribeAccountBalance',
   });

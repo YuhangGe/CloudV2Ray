@@ -13,16 +13,11 @@ use tauri::{
 };
 use tauri::{AppHandle, Manager, WebviewWindowBuilder};
 use tauri_plugin_dialog::DialogExt;
-use tencent::{
-  tauri_call_tencent_bill_api, tauri_call_tencent_cvm_api, tauri_call_tencent_tat_api,
-  tauri_call_tencent_vpc_api, tauri_init_tencent_bill_client, tauri_init_tencent_cvm_client,
-  tauri_init_tencent_tat_client, tauri_init_tencent_vpc_client,
-};
+use tencent::tauri_calc_tencent_cloud_api_signature;
 use test::tauri_test;
 use util::{get_platform_zip_file, tauri_exit_process, tauri_generate_uuid, tauri_open_devtools};
 use v2ray::{
-  extract_v2ray_if_need, init_v2ray_manager, tauri_ping_v2ray_delay, tauri_ping_v2ray_interval,
-  tauri_ping_v2ray_once, tauri_start_v2ray_server, tauri_stop_v2ray_server, V2RayManager,
+  extract_v2ray_if_need, tauri_start_v2ray_server, tauri_stop_v2ray_server, V2RayManager,
 };
 
 #[cfg(not(target_os = "android"))]
@@ -61,19 +56,12 @@ fn open_window(app: &AppHandle) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   let mut app = tauri::Builder::default()
+    // .plugin(tauri_plugin_fs::init())
+    .plugin(tauri_plugin_http::init())
+    .plugin(tauri_plugin_dialog::init())
     .manage(V2RayManager::new())
     .invoke_handler(tauri::generate_handler![
-      tauri_init_tencent_cvm_client,
-      tauri_call_tencent_cvm_api,
-      tauri_init_tencent_vpc_client,
-      tauri_call_tencent_vpc_api,
-      tauri_call_tencent_tat_api,
-      tauri_init_tencent_tat_client,
-      tauri_call_tencent_bill_api,
-      tauri_init_tencent_bill_client,
-      tauri_ping_v2ray_once,
-      tauri_ping_v2ray_delay,
-      tauri_ping_v2ray_interval,
+      tauri_calc_tencent_cloud_api_signature,
       tauri_start_v2ray_server,
       tauri_stop_v2ray_server,
       tauri_generate_uuid,
@@ -83,7 +71,6 @@ pub fn run() {
       tauri_set_sysproxy,
       tauri_test,
     ])
-    .plugin(tauri_plugin_dialog::init())
     // .plugin(tauri_plugin_shell::init())
     .setup(|app| {
       if get_platform_zip_file().eq("") {
@@ -120,7 +107,6 @@ pub fn run() {
           }
         });
       }
-      init_v2ray_manager(app.handle(), app.state::<V2RayManager>());
 
       #[cfg(target_os = "macos")]
       app.set_activation_policy(tauri::ActivationPolicy::Accessory);
