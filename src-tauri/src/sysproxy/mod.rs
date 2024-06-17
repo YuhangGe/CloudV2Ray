@@ -1,8 +1,9 @@
 //! Get/Set system proxy. Supports Windows, macOS and linux (via gsettings).
 
-use crate::util::emit_log;
 use anyhow_tauri::{IntoTAResult, TAResult};
-use tauri::AppHandle;
+use tauri::{AppHandle, Runtime};
+
+use crate::util::emit_log;
 
 #[cfg(target_os = "macos")]
 mod macos;
@@ -17,7 +18,7 @@ pub struct Sysproxy {
   pub bypass: String,
 }
 
-fn is_sysproxy_enabled(h: AppHandle) -> anyhow::Result<bool> {
+fn is_sysproxy_enabled<R: Runtime>(h: AppHandle<R>) -> anyhow::Result<bool> {
   #[cfg(not(target_os = "android"))]
   {
     let proxy = Sysproxy::get_system_proxy()?;
@@ -41,7 +42,7 @@ fn set_system_proxy(port: u16, enabled: bool) -> anyhow::Result<()> {
   }
 }
 #[tauri::command]
-pub fn tauri_is_sysproxy_enabled(h: AppHandle) -> TAResult<bool> {
+pub fn tauri_is_sysproxy_enabled<R: Runtime>(h: AppHandle<R>) -> TAResult<bool> {
   is_sysproxy_enabled(h).into_ta_result()
 }
 

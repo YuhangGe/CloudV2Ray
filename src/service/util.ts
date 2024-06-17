@@ -18,7 +18,7 @@ export function generateStrongPassword() {
 }
 export const copyToClipboard = (textToCopy: string) => {
   // navigator clipboard needs a secure context (HTTPS)
-  if (navigator.clipboard && window.isSecureContext) {
+  if (!IS_IN_MOBILE && navigator.clipboard && window.isSecureContext) {
     // navigator clipboard api method'
     return navigator.clipboard.writeText(textToCopy);
   }
@@ -135,3 +135,5 @@ export function loadingMessage(title: string): LoadingMessage {
     },
   };
 }
+
+export const IS_IN_MOBILE = window.__TAURI_PLATFORM__ === 'android';

@@ -17,7 +17,6 @@
     {
       "identifier": "http:default",
       "allow": ["https://*.tencentcloudapi.com", "http://*:2081"]
-    },
-    "fs:default"
+    }
   ]
 }

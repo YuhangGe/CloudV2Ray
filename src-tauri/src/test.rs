@@ -1,9 +1,9 @@
 use anyhow_tauri::{IntoTAResult, TAResult};
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Manager, Runtime};
 
 use crate::util::emit_log;
 
-async fn test(h: &AppHandle) -> anyhow::Result<String> {
+async fn test<R: Runtime>(h: &AppHandle<R>) -> anyhow::Result<String> {
   let resource_path = h.path().resource_dir()?;
   emit_log(&h, "log::v2ray", &format!("{:?}", resource_path));
   let x = resource_path.join("t.txt");

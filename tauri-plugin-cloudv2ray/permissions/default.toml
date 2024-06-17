@@ -1,4 +1,4 @@
 "$schema" = "schemas/schema.json"
 [default]
 description = "Allows all commands"
-permissions = ["allow-execute", "allow-ping"]
+permissions = ["allow-ping", "allow-test"]

@@ -1,41 +1,26 @@
+use tauri::{AppHandle, Manager, Runtime};
+
 use std::{io::Cursor, sync::Arc};
 
 use anyhow_tauri::{IntoTAResult, TAResult};
-use tauri::{AppHandle, Manager, State};
+use tauri::State;
 use tokio::{
   io::{AsyncBufReadExt, AsyncRead},
   process::Child,
   sync::Mutex,
 };
 
-use crate::util::{emit_log, get_platform_zip_file};
+use crate::util::emit_log;
 
-// pub async fn ping(url: &str) -> anyhow::Result<String> {
-//   let client = reqwest::Client::new();
-//   let res = client
-//     .post(url)
-//     .timeout(Duration::from_secs(3))
-//     .send()
-//     .await?;
-//   let text = res.text().await?;
-//   Ok(text)
-//   // Ok("".into())
-// }
+pub struct V2RayProc(Arc<Mutex<Option<Child>>>);
 
-pub struct V2RayManager {
-  // ping_url: Arc<Mutex<Option<String>>>,
-  v2ray_proc: Arc<Mutex<Option<Child>>>,
-}
-impl V2RayManager {
+impl V2RayProc {
   pub fn new() -> Self {
-    Self {
-      // ping_url: Arc::new(Mutex::new(None)),
-      v2ray_proc: Arc::new(Mutex::new(None)),
-    }
+    Self(Arc::new(Mutex::new(None)))
   }
 }
 
-async fn read<R: AsyncRead + Unpin>(stdo: R, h: &AppHandle) {
+async fn read<R: Runtime, T: AsyncRead + Unpin>(stdo: T, h: &AppHandle<R>) {
   let reader = tokio::io::BufReader::new(stdo);
   let mut lines_reader = reader.lines();
   loop {
@@ -55,21 +40,21 @@ async fn read<R: AsyncRead + Unpin>(stdo: R, h: &AppHandle) {
   }
 }
 
-pub async fn stop_v2ray_server(state: State<'_, V2RayManager>) {
-  let v2ray_proc = state.v2ray_proc.clone();
+pub async fn stop_v2ray_server(state: State<'_, V2RayProc>) {
+  let v2ray_proc = state.0.clone();
   if let Some(mut proc) = v2ray_proc.lock().await.take() {
     // 如果存在旧的 v2ray 进程，先关闭。
     let _ = proc.kill().await;
   };
 }
 
-async fn start_v2ray_server(
+async fn start_v2ray_server<R: Runtime>(
   config: &str,
-  h: AppHandle,
-  state: State<'_, V2RayManager>,
+  h: AppHandle<R>,
+  state: State<'_, V2RayProc>,
 ) -> anyhow::Result<String> {
   emit_log(&h, "log::v2ray", "starting v2ray core server...");
-  let v2ray_proc = state.v2ray_proc.clone();
+  let v2ray_proc = state.0.clone();
   if let Some(mut proc) = v2ray_proc.lock().await.take() {
     // 如果存在旧的 v2ray 进程，先关闭。
     let _ = proc.kill().await;
@@ -126,7 +111,54 @@ async fn start_v2ray_server(
   Ok(format!("{{\"pid\":{}}}", pid))
 }
 
-pub fn extract_v2ray_if_need(h: &AppHandle) -> anyhow::Result<()> {
+#[tauri::command]
+pub async fn tauri_start_v2ray_server<R: Runtime>(
+  config: &str,
+  handle: AppHandle<R>,
+  state: State<'_, V2RayProc>,
+) -> TAResult<String> {
+  start_v2ray_server(config, handle, state)
+    .await
+    .into_ta_result()
+}
+
+#[tauri::command]
+pub async fn tauri_stop_v2ray_server<R: Runtime>(
+  handle: AppHandle<R>,
+  state: State<'_, V2RayProc>,
+) -> TAResult<()> {
+  stop_v2ray_server(state).await;
+  emit_log(&handle, "log::v2ray", "v2ray core server stopped.");
+  Ok(())
+}
+
+const fn get_platform_zip_file() -> &'static str {
+  if cfg!(target_os = "windows") {
+    if cfg!(target_arch = "x86_64") {
+      "resources/v2ray-windows-x64.zip"
+    } else {
+      ""
+    }
+  } else if cfg!(target_os = "macos") {
+    if cfg!(target_arch = "aarch64") {
+      "resources/v2ray-macos-arm64.zip"
+    } else {
+      "resources/v2ray-macos-x64.zip"
+    }
+  } else if cfg!(target_os = "android") {
+    if cfg!(target_arch = "aarch64") {
+      "resources/v2ray-android-arm64.zip"
+    } else if cfg!(target_arch = "x86_64") {
+      "resources/v2ray-android-x86_64.zip"
+    } else {
+      ""
+    }
+  } else {
+    ""
+  }
+}
+
+pub fn extract_v2ray_if_need<R: Runtime>(h: &AppHandle<R>) -> anyhow::Result<()> {
   let resource_path = h.path().resource_dir()?;
   // println!("{:?}", resource_path);
   let v2ray_bin_dir = resource_path.join("v2ray");
@@ -140,7 +172,7 @@ pub fn extract_v2ray_if_need(h: &AppHandle) -> anyhow::Result<()> {
     // std::fs::remove_dir_all(&v2ray_bin_dir)?;
   }
   emit_log(h, "log::sys", "首次启动，开始解压缩 V2Ray 压缩包...");
-  let zip_file: &str = get_platform_zip_file();
+  let zip_file: &str = &get_platform_zip_file();
   let zip_file_path = resource_path.join(zip_file);
   // println!("{:?}", zip_file_path);
   let buf = std::fs::read(&zip_file_path)?;
@@ -151,62 +183,5 @@ pub fn extract_v2ray_if_need(h: &AppHandle) -> anyhow::Result<()> {
   zip_extract::extract(Cursor::new(buf), &v2ray_bin_dir, true)?;
   // println!("extract done");
   emit_log(h, "log::sys", "V2Ray 压缩包解压完成");
-  Ok(())
-}
-
-// pub fn init_v2ray_manager(h: &AppHandle, state: State<V2RayManager>) {
-//   // let handle = app.handle();
-//   let ping_url = state.ping_url.clone();
-//   let handle = h.clone();
-//   tauri::async_runtime::spawn(async move {
-//     loop {
-//       {
-//         let guard = ping_url.lock().await;
-//         let url = guard.as_ref();
-//         if let Some(url) = url {
-//           let t = ping(url).await;
-//           if !matches!(t, Ok(url) if url.eq("pong!")) {
-//             // use tauri_plugin_dialog::DialogExt;
-//             // handle.dialog().message("不支持当前平台！").blocking_show();
-//             let _ = handle.emit("ping::fail", ());
-//             // guard.take();
-//           } else {
-//             let _ = handle.emit("ping::ok", ());
-//           }
-//         }
-//       } // auto drop guard
-//       tokio::time::sleep(Duration::from_secs(2 * 60)).await;
-//     }
-//   });
-// }
-
-// #[tauri::command]
-// pub async fn tauri_ping_v2ray_interval(
-//   url: &str,
-//   state: State<'_, V2RayManager>,
-// ) -> TAResult<String> {
-//   let url = url.to_owned();
-//   state.ping_url.lock().await.replace(url);
-//   Ok("".into())
-// }
-
-#[tauri::command]
-pub async fn tauri_start_v2ray_server(
-  config: &str,
-  handle: AppHandle,
-  state: State<'_, V2RayManager>,
-) -> TAResult<String> {
-  start_v2ray_server(config, handle, state)
-    .await
-    .into_ta_result()
-}
-
-#[tauri::command]
-pub async fn tauri_stop_v2ray_server(
-  handle: AppHandle,
-  state: State<'_, V2RayManager>,
-) -> TAResult<()> {
-  stop_v2ray_server(state).await;
-  emit_log(&handle, "log::v2ray", "v2ray core server stopped.");
   Ok(())
 }

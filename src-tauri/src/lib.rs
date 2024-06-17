@@ -1,26 +1,34 @@
+#[cfg(desktop)]
 mod sysproxy;
+#[cfg(desktop)]
+mod v2ray;
+
 mod tencent;
 mod test;
 mod util;
-mod v2ray;
 
+use tauri::{AppHandle, Manager, WebviewWindowBuilder};
+
+use tencent::tauri_calc_tencent_cloud_api_signature;
+use test::tauri_test;
+use util::tauri_generate_uuid;
+#[cfg(desktop)]
+use util::tauri_open_devtools;
+
+#[cfg(desktop)]
 use sysproxy::{tauri_is_sysproxy_enabled, tauri_set_sysproxy};
-#[cfg(not(target_os = "android"))]
+#[cfg(desktop)]
 use tauri::{
   image::Image,
   menu::{Menu, PredefinedMenuItem},
   tray::{MouseButton, TrayIconBuilder, TrayIconEvent},
 };
-use tauri::{AppHandle, Manager, WebviewWindowBuilder};
-use tauri_plugin_dialog::DialogExt;
-use tencent::tauri_calc_tencent_cloud_api_signature;
-use test::tauri_test;
-use util::{get_platform_zip_file, tauri_exit_process, tauri_generate_uuid, tauri_open_devtools};
-use v2ray::{
-  extract_v2ray_if_need, tauri_start_v2ray_server, tauri_stop_v2ray_server, V2RayManager,
-};
+#[cfg(desktop)]
+use util::tauri_exit_process;
+#[cfg(desktop)]
+use v2ray::{extract_v2ray_if_need, tauri_start_v2ray_server, tauri_stop_v2ray_server, V2RayProc};
 
-#[cfg(not(target_os = "android"))]
+#[cfg(desktop)]
 const APP_TITLE: &str = "CloudV2Ray - 基于云计算的 V2Ray 客户端";
 
 fn open_window(app: &AppHandle) {
@@ -35,55 +43,57 @@ fn open_window(app: &AppHandle) {
     tauri::AppHandle::show(&app.app_handle()).unwrap();
     return;
   }
-  let mut setting_window = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default());
-  #[cfg(not(target_os = "android"))]
+  #[cfg(desktop)]
   {
-    setting_window = setting_window
+    let setting_window = WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default())
       .title(APP_TITLE)
       .inner_size(800., 600.)
-      .center();
-  }
-
-  let setting_window = setting_window.build().unwrap();
-
-  #[cfg(not(target_os = "android"))]
-  {
+      .center()
+      .initialization_script(if cfg!(windows) {
+        "window.__TAURI_PLATFORM__ = 'windows'"
+      } else {
+        "window.__TAURI_PLATFORM__ = 'macos'"
+      })
+      .build()
+      .unwrap();
     setting_window.show().unwrap();
     setting_window.set_focus().unwrap();
   }
+  #[cfg(mobile)]
+  WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::default())
+    .initialization_script("window.__TAURI_PLATFORM__ = 'android'")
+    .build()
+    .unwrap();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   let mut app = tauri::Builder::default()
-    // .plugin(tauri_plugin_fs::init())
-    .plugin(tauri_plugin_cloudv2ray::init())
     .plugin(tauri_plugin_http::init())
-    .plugin(tauri_plugin_dialog::init())
-    .manage(V2RayManager::new())
+    // .plugin(tauri_plugin_dialog::init())
     .invoke_handler(tauri::generate_handler![
       tauri_calc_tencent_cloud_api_signature,
-      tauri_start_v2ray_server,
-      tauri_stop_v2ray_server,
       tauri_generate_uuid,
-      tauri_open_devtools,
-      tauri_exit_process,
-      tauri_is_sysproxy_enabled,
-      tauri_set_sysproxy,
       tauri_test,
+      #[cfg(desktop)]
+      tauri_open_devtools,
+      #[cfg(desktop)]
+      tauri_exit_process,
+      #[cfg(desktop)]
+      tauri_is_sysproxy_enabled,
+      #[cfg(desktop)]
+      tauri_set_sysproxy,
+      #[cfg(desktop)]
+      tauri_start_v2ray_server,
+      #[cfg(desktop)]
+      tauri_stop_v2ray_server
     ])
     // .plugin(tauri_plugin_shell::init())
     .setup(|app| {
-      if get_platform_zip_file().eq("") {
-        app.dialog().message("不支持当前平台！").blocking_show();
-        std::process::exit(-1);
-      }
-
-      #[cfg(not(target_os = "android"))]
+      #[cfg(desktop)]
       {
         if let Err(e) = extract_v2ray_if_need(app.handle()) {
-          eprintln!("{}", e);
-          app.dialog().message("解压 V2Ray 异常").blocking_show();
+          eprintln!("解压 V2Ray 异常: {}", e);
           std::process::exit(-1);
         }
 
@@ -107,6 +117,8 @@ pub fn run() {
             }
           }
         });
+
+        app.manage(V2RayProc::new());
       }
 
       #[cfg(target_os = "macos")]
@@ -117,7 +129,11 @@ pub fn run() {
       Ok(())
     });
 
-  #[cfg(not(target_os = "android"))]
+  #[cfg(mobile)]
+  {
+    app = app.plugin(tauri_plugin_cloudv2ray::init());
+  }
+  #[cfg(desktop)]
   {
     app = app.on_window_event(|window, event| match event {
       tauri::WindowEvent::CloseRequested { api, .. } => {

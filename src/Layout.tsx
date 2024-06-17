@@ -1,7 +1,7 @@
 import { App as AntApp, Button, Dropdown, Spin, Tooltip } from 'antd';
 import { Suspense, lazy, useEffect, useMemo, useState, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { cs, useQuery } from './service/util';
+import { IS_IN_MOBILE, cs, useQuery } from './service/util';
 import { globalStore } from './store/global';
 import { useLogListen } from './views/logview/listen';
 import { appendLog } from './store/log';
@@ -68,7 +68,7 @@ export const Layout: FC = () => {
     }
     globalStore.set('v2rayState', 'INSTALLED');
     appendLog('[ping] ==> 开始定时 Ping 服务');
-    if (!(await pingV2RayInterval()) || !(await startV2RayCore())) {
+    if (!(await pingV2RayInterval()) || (!IS_IN_MOBILE && !(await startV2RayCore()))) {
       void message.error('本地 v2ray-core 启动失败，请尝试退出后重启 CloudV2Ray。');
     }
   };
@@ -144,7 +144,7 @@ export const Layout: FC = () => {
           <div className='flex-1' />
           <Button
             onClick={async () => {
-              const x = await invoke('plugin:cloudv2ray|ping', { value: 666 });
+              const x = await invoke('plugin:cloudv2ray|test', { value: 666 });
               console.log(x);
             }}
           >
