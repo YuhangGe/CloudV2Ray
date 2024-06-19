@@ -23,7 +23,7 @@ export const Control: FC = () => {
   };
 
   return (
-    <div className='flex items-center gap-2'>
+    <div className='flex flex-wrap items-center gap-2 border-t border-t-blue-200 pt-3'>
       {!inst && (
         <Button
           loading={v2rayState === 'INSTALLING'}
@@ -37,7 +37,7 @@ export const Control: FC = () => {
           创建主机
         </Button>
       )}
-      {inst && inst.InstanceState === 'RUNNING' && v2rayState !== 'INSTALLED' && (
+      {inst && inst.InstanceState === 'RUNNING' && (
         <Button
           loading={v2rayState === 'INSTALLING'}
           onClick={() => {
@@ -49,7 +49,7 @@ export const Control: FC = () => {
           className='text-xs'
           size='small'
         >
-          安装 V2Ray
+          {v2rayState === 'INSTALLED' ? '重新' : ''}安装 V2Ray
         </Button>
       )}
       {v2rayState === 'INSTALLED' && <DelayDestroy />}

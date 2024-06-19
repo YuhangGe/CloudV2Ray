@@ -29,11 +29,13 @@ class V2RayVpnService : VpnService() {
     disconnect()
   }
 
-  private fun connect(): Int {
+  private fun connect() {
     vpnInterface = createVpnInterface()
     println("vpn created ${vpnInterface.fd}")
-
-    return vpnInterface.fd
+    sendBroadcast(Intent("plugin.cloudv2ray").also {
+      it.setType("vpn")
+      it.putExtra("fd", vpnInterface.fd)
+    })
   }
 
   private fun disconnect() {

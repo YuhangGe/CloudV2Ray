@@ -68,7 +68,7 @@ export const Layout: FC = () => {
     }
     globalStore.set('v2rayState', 'INSTALLED');
     appendLog('[ping] ==> 开始定时 Ping 服务');
-    if (!(await pingV2RayInterval()) || !(await startV2RayCore())) {
+    if (!(await pingV2RayInterval()) || (!IS_IN_MOBILE && !(await startV2RayCore()))) {
       void message.error('本地 v2ray-core 启动失败，请尝试退出后重启 CloudV2Ray。');
     }
   };
@@ -142,7 +142,7 @@ export const Layout: FC = () => {
             <span className='ml-2 font-medium'>CloudV2Ray</span>
             <span className='mx-2'>-</span>
           </div>
-          <div className='text-2xl max-sm:text-secondary-text'>{title}</div>
+          <div className='whitespace-nowrap text-2xl max-sm:text-secondary-text'>{title}</div>
           <div className='flex-1' />
           <Button
             loading={x}
@@ -153,7 +153,7 @@ export const Layout: FC = () => {
               setX(false);
             }}
           >
-            TEST
+            T
           </Button>
           <Dropdown
             trigger={['click']}
@@ -174,7 +174,7 @@ export const Layout: FC = () => {
           >
             <Button
               className='sm:hidden'
-              icon={<span className='icon-[ant-design--menu-outlined]'></span>}
+              icon={<span className='icon-[ant-design--menu-outlined] shrink-0'></span>}
             />
           </Dropdown>
         </div>

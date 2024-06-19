@@ -85,7 +85,7 @@ export async function loadInstanceDependentResources(): Promise<InstanceDeps | u
           },
           {
             Protocol: 'TCP',
-            Port: '2080,2081',
+            Port: '2080,2081,2082',
             Action: 'ACCEPT',
             CidrBlock: '0.0.0.0/0',
             PolicyDescription: 'v2ray',

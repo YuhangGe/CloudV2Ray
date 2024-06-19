@@ -4,6 +4,7 @@ import { Balance } from './Balance';
 import { Bandwidth } from './Bandwind';
 import { Price } from './Price';
 import { Sysproxy } from './Sysproxy';
+import { Socks } from './Socks';
 import { globalStore } from '@/store/global';
 import type { CVMInstance } from '@/service/tencent';
 import { IS_IN_MOBILE, copyToClipboard } from '@/service/util';
@@ -67,35 +68,31 @@ const OverviewView: FC = () => {
 
   return (
     <div className='mt-2 flex flex-col gap-4'>
-      <div className='flex items-center gap-2'>
-        <span>远程地址：</span>
-        <Tag className='flex-1 overflow-x-auto font-mono'>
+      <div className='flex items-center'>
+        <span className='mr-2 whitespace-nowrap'>远程地址：</span>
+        <Tag className='mr-0 flex-shrink basis-56 overflow-x-auto font-mono'>
           {inst ? `vmess://${inst.PublicIpAddresses?.[0] ?? '-'}:2080` : '-'}
         </Tag>
-        {inst && <ShareCode inst={inst} />}
+        {inst && (
+          <div className='ml-2 flex w-10 shrink-0 items-center'>
+            <ShareCode inst={inst} />
+          </div>
+        )}
       </div>
       {!IS_IN_MOBILE && (
-        <div className='flex gap-2'>
-          <span className='relative top-0.5'>本地代理：</span>
-          {inst ? (
-            <div className='flex flex-col gap-1 font-mono'>
-              <Tag className='font-mono'>
-                <span className='inline-block w-10'>socks5</span>
-                {'://127.0.0.1:7890'}
-              </Tag>
-              {/* <Tag className='font-mono'>
-                <span style={{ letterSpacing: '0.38em' }} className='inline-block w-10'>
-                  http
-                </span>
-                {'://127.0.0.1:7891'}
-              </Tag> */}
-            </div>
-          ) : (
-            '-'
-          )}
+        <div className='flex items-center'>
+          <span className='mr-2 whitespace-nowrap'>本地代理：</span>
+          <Tag className='mr-0 flex-shrink basis-56 overflow-x-auto font-mono'>
+            {inst ? 'socks5://127.0.0.1:7890' : '-'}
+          </Tag>
+          {
+            // 占位，和远程地址保持对齐
+            inst && <div className='ml-2 w-10 shrink-0'></div>
+          }
         </div>
       )}
       {!IS_IN_MOBILE && <Sysproxy />}
+      {inst && IS_IN_MOBILE && <Socks inst={inst} />}
       <Bandwidth />
       <Balance />
       <Price />
