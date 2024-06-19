@@ -323,6 +323,76 @@
           ]
         },
         {
+          "description": "allow-runV2RayCore -> Enables the runV2RayCore command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-runV2RayCore"
+          ]
+        },
+        {
+          "description": "deny-runV2RayCore -> Denies the runV2RayCore command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-runV2RayCore"
+          ]
+        },
+        {
+          "description": "allow-startV2RayCore -> Enables the startV2RayCore command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-startV2RayCore"
+          ]
+        },
+        {
+          "description": "deny-startV2RayCore -> Denies the startV2RayCore command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-startV2RayCore"
+          ]
+        },
+        {
+          "description": "allow-startVpn -> Enables the startVpn command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-startVpn"
+          ]
+        },
+        {
+          "description": "deny-startVpn -> Denies the startVpn command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-startVpn"
+          ]
+        },
+        {
+          "description": "allow-stopV2RayCore -> Enables the stopV2RayCore command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-stopV2RayCore"
+          ]
+        },
+        {
+          "description": "deny-stopV2RayCore -> Denies the stopV2RayCore command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-stopV2RayCore"
+          ]
+        },
+        {
+          "description": "allow-stopVpn -> Enables the stopVpn command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-stopVpn"
+          ]
+        },
+        {
+          "description": "deny-stopVpn -> Denies the stopVpn command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-stopVpn"
+          ]
+        },
+        {
           "description": "allow-test -> Enables the test command without any pre-configured scope.",
           "type": "string",
           "enum": [

@@ -11,6 +11,7 @@ use tauri::{AppHandle, Manager, WebviewWindowBuilder};
 
 use tencent::tauri_calc_tencent_cloud_api_signature;
 use test::tauri_test;
+use tun2proxy::Args;
 use util::tauri_generate_uuid;
 #[cfg(desktop)]
 use util::tauri_open_devtools;

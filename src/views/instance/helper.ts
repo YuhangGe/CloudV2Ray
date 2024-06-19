@@ -11,7 +11,7 @@ import {
   ModifyCommand,
   type CVMInstance,
 } from '@/service/tencent';
-import { renderTpl } from '@/service/util';
+import { IS_IN_MOBILE, renderTpl } from '@/service/util';
 import { appendLog } from '@/store/log';
 import { getInstanceAgentShell } from '@/service/instance';
 
@@ -181,8 +181,11 @@ export async function startV2RayCore() {
   const ip = inst.PublicIpAddresses?.[0];
   if (!ip) return false;
   try {
-    await invoke('tauri_start_v2ray_server', {
-      config: renderTpl(configTpl, {
+    const tpl = IS_IN_MOBILE
+      ? configTpl.replace(/,\s*\/\*mobile-ignore\*\/[\d\D]+?\/\*mobile-ignore-end\*\//g, '')
+      : configTpl;
+    await invoke(IS_IN_MOBILE ? 'plugin:cloudv2ray|startV2RayCore' : 'tauri_start_v2ray_server', {
+      config: renderTpl(tpl, {
         REMOTE_IP: ip,
         TOKEN: settings.token,
       }),

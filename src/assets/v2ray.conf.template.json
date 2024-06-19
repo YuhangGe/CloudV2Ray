@@ -30,6 +30,7 @@
         ]
       }
     },
+    /*mobile-ignore*/
     {
       "protocol": "freedom",
       "settings": {},
@@ -40,7 +41,9 @@
       "settings": {},
       "tag": "adblock" //同样的，这个 tag 也是要有的，在路由中说 adblock 就知道是这里的 blackhole（黑洞） 了
     }
+    /*mobile-ignore-end*/
   ],
+  /*mobile-ignore*/
   "routing": {
     "domainStrategy": "IPOnDemand",
     "rules": [
@@ -66,4 +69,5 @@
       }
     ]
   }
+  /*mobile-ignore-end*/
 }

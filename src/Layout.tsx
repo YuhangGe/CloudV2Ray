@@ -68,7 +68,7 @@ export const Layout: FC = () => {
     }
     globalStore.set('v2rayState', 'INSTALLED');
     appendLog('[ping] ==> 开始定时 Ping 服务');
-    if (!(await pingV2RayInterval()) || (!IS_IN_MOBILE && !(await startV2RayCore()))) {
+    if (!(await pingV2RayInterval()) || !(await startV2RayCore())) {
       void message.error('本地 v2ray-core 启动失败，请尝试退出后重启 CloudV2Ray。');
     }
   };
@@ -89,6 +89,8 @@ export const Layout: FC = () => {
         setLoaded(true);
       });
   }, []);
+
+  const [x, setX] = useState(false);
 
   return loaded ? (
     <>
@@ -143,9 +145,12 @@ export const Layout: FC = () => {
           <div className='text-2xl max-sm:text-secondary-text'>{title}</div>
           <div className='flex-1' />
           <Button
+            loading={x}
             onClick={async () => {
-              const x = await invoke('plugin:cloudv2ray|test', { value: 666 });
-              console.log(x);
+              setX(true);
+              const r = await invoke('plugin:cloudv2ray|startVpn');
+              console.log(r);
+              setX(false);
             }}
           >
             TEST

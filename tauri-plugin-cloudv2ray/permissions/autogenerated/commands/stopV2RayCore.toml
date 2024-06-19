@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-stopV2RayCore"
+description = "Enables the stopV2RayCore command without any pre-configured scope."
+commands.allow = ["stopV2RayCore"]
+
+[[permission]]
+identifier = "deny-stopV2RayCore"
+description = "Denies the stopV2RayCore command without any pre-configured scope."
+commands.deny = ["stopV2RayCore"]

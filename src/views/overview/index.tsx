@@ -69,7 +69,7 @@ const OverviewView: FC = () => {
     <div className='mt-2 flex flex-col gap-4'>
       <div className='flex items-center gap-2'>
         <span>远程地址：</span>
-        <Tag className='font-mono'>
+        <Tag className='flex-1 overflow-x-auto font-mono'>
           {inst ? `vmess://${inst.PublicIpAddresses?.[0] ?? '-'}:2080` : '-'}
         </Tag>
         {inst && <ShareCode inst={inst} />}

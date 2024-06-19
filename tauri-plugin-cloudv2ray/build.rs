@@ -1,4 +1,4 @@
-const COMMANDS: &[&str] = &["ping", "test"];
+const COMMANDS: &[&str] = &["startV2RayCore", "stopV2RayCore", "startVpn", "stopVpn"];
 
 fn main() {
   tauri_plugin::Builder::new(COMMANDS)

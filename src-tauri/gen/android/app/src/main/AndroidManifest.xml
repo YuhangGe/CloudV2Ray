@@ -19,13 +19,32 @@
         </activity>
 
         <provider
-          android:name="androidx.core.content.FileProvider"
-          android:authorities="${applicationId}.fileprovider"
-          android:exported="false"
-          android:grantUriPermissions="true">
-          <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/file_paths" />
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
+
+        <service
+            android:name="com.plugin.cloudv2ray.V2RayVpnService"
+            android:enabled="true"
+            android:exported="false"
+            android:label="@string/main_activity_title"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:foregroundServiceType="specialUse"
+            android:process=":RunV2RayCoreDaemon">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+            <!--            <meta-data-->
+            <!--                android:name="android.net.VpnService.SUPPORTS_ALWAYS_ON"-->
+            <!--                android:value="true" />-->
+            <!--            <property-->
+            <!--                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"-->
+            <!--                android:value="vpn" />-->
+        </service>
     </application>
 </manifest>

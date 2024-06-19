@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-runV2RayCore"
+description = "Enables the runV2RayCore command without any pre-configured scope."
+commands.allow = ["runV2RayCore"]
+
+[[permission]]
+identifier = "deny-runV2RayCore"
+description = "Denies the runV2RayCore command without any pre-configured scope."
+commands.deny = ["runV2RayCore"]
