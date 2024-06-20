@@ -29,5 +29,8 @@
   "[groovy]": {
     "editor.defaultFormatter": "NicolasVuillamy.vscode-groovy-lint"
   },
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
   "rust-analyzer.cargo.target": "x86_64-linux-android"
 }

@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-getMobileDir"
+description = "Enables the getMobileDir command without any pre-configured scope."
+commands.allow = ["getMobileDir"]
+
+[[permission]]
+identifier = "deny-getMobileDir"
+description = "Denies the getMobileDir command without any pre-configured scope."
+commands.deny = ["getMobileDir"]

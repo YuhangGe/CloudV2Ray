@@ -1,4 +1,13 @@
 "$schema" = "schemas/schema.json"
 [default]
 description = "Allows all commands"
-permissions = ["allow-startV2RayCore", "allow-stopV2RayCore", "allow-startVpn", "allow-stopVpn"]
+permissions = [
+  "allow-startV2RayCore",
+  "allow-stopV2RayCore",
+  "allow-startVpn",
+  "allow-stopVpn",
+  "allow-getMobileDir",
+  "allow-tauri-start-v2ray-server",
+  "allow-tauri-stop-v2ray-server",
+  "allow-register-listener",
+]

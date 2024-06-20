@@ -1,7 +1,7 @@
 import { App as AntApp, Button, Dropdown, Spin, Tooltip } from 'antd';
 import { Suspense, lazy, useEffect, useMemo, useState, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { IS_IN_MOBILE, cs, useQuery } from './service/util';
+import { cs, useQuery } from './service/util';
 import { globalStore } from './store/global';
 import { useLogListen } from './views/logview/listen';
 import { appendLog } from './store/log';
@@ -58,18 +58,31 @@ export const Layout: FC = () => {
   useLogListen();
 
   const initialize = async () => {
-    const [err, res] = await loadInstance();
+    try {
+      const [err, res] = await loadInstance();
 
-    if (err || !res.InstanceSet.length) return;
-    const inst = res.InstanceSet[0];
-    globalStore.set('instance', inst);
-    if (!(await pingV2RayOnce(inst))) {
-      return;
-    }
-    globalStore.set('v2rayState', 'INSTALLED');
-    appendLog('[ping] ==> 开始定时 Ping 服务');
-    if (!(await pingV2RayInterval()) || (!IS_IN_MOBILE && !(await startV2RayCore()))) {
-      void message.error('本地 v2ray-core 启动失败，请尝试退出后重启 CloudV2Ray。');
+      if (err || !res.InstanceSet.length) return;
+      const inst = res.InstanceSet[0];
+      globalStore.set('instance', inst);
+      if (!(await pingV2RayOnce(inst))) {
+        return;
+      }
+      globalStore.set('v2rayState', 'INSTALLED');
+      appendLog('[ping] ==> 开始定时 Ping 服务');
+      if (!(await pingV2RayInterval())) {
+        void message.error('pingV2RayInterval 失败，请尝试退出后重启 CloudV2Ray。');
+        return;
+      }
+      if (!(await startV2RayCore())) {
+        void message.error('本地 v2ray-core 启动失败，请尝试退出后重启 CloudV2Ray。');
+      }
+    } catch (ex) {
+      void message.error(`${ex}`);
+    } finally {
+      if (!globalStore.get('instance') || globalStore.get('v2rayState') !== 'INSTALLED') {
+        setView('instance');
+      }
+      setLoaded(true);
     }
   };
   useEffect(() => {
@@ -78,19 +91,10 @@ export const Layout: FC = () => {
       setLoaded(true);
       return;
     }
-    void initialize()
-      .catch((ex) => {
-        void message.error(`${ex}`);
-      })
-      .finally(() => {
-        if (!globalStore.get('instance') || globalStore.get('v2rayState') !== 'INSTALLED') {
-          setView('instance');
-        }
-        setLoaded(true);
-      });
+    void initialize();
   }, []);
 
-  const [x, setX] = useState(false);
+  // const [x, setX] = useState(false);
 
   return loaded ? (
     <>
@@ -124,8 +128,9 @@ export const Layout: FC = () => {
         <div className='flex-1'></div>
         <Tooltip title='退出 CloudV2Ray，结束本地代理'>
           <Button
-            onClick={() => {
-              void invoke('tauri_exit_process');
+            onClick={async () => {
+              await invoke('plugin:cloudv2ray|tauri_stop_v2ray_server');
+              await invoke('tauri_exit_process');
             }}
             className='flex items-center justify-center pb-4 pt-2'
             style={{ width: '100%' }}
@@ -144,7 +149,7 @@ export const Layout: FC = () => {
           </div>
           <div className='whitespace-nowrap text-2xl max-sm:text-secondary-text'>{title}</div>
           <div className='flex-1' />
-          <Button
+          {/* <Button
             loading={x}
             onClick={async () => {
               setX(true);
@@ -154,7 +159,7 @@ export const Layout: FC = () => {
             }}
           >
             T
-          </Button>
+          </Button> */}
           <Dropdown
             trigger={['click']}
             menu={{

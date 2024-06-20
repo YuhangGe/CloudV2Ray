@@ -1,7 +1,5 @@
 #[cfg(desktop)]
 mod sysproxy;
-#[cfg(desktop)]
-mod v2ray;
 
 mod tencent;
 mod test;
@@ -25,8 +23,6 @@ use util::tauri_generate_uuid;
 use util::tauri_exit_process;
 #[cfg(desktop)]
 use util::tauri_open_devtools;
-#[cfg(desktop)]
-use v2ray::{extract_v2ray_if_need, tauri_start_v2ray_server, tauri_stop_v2ray_server, V2RayProc};
 
 #[cfg(desktop)]
 const APP_TITLE: &str = "CloudV2Ray - 基于云计算的 V2Ray 客户端";
@@ -68,8 +64,9 @@ fn open_window(app: &AppHandle) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-  let mut app = tauri::Builder::default()
+  let app = tauri::Builder::default()
     .plugin(tauri_plugin_http::init())
+    .plugin(tauri_plugin_cloudv2ray::init())
     // .plugin(tauri_plugin_dialog::init())
     .invoke_handler(tauri::generate_handler![
       tauri_calc_tencent_cloud_api_signature,
@@ -82,21 +79,12 @@ pub fn run() {
       #[cfg(desktop)]
       tauri_is_sysproxy_enabled,
       #[cfg(desktop)]
-      tauri_set_sysproxy,
-      #[cfg(desktop)]
-      tauri_start_v2ray_server,
-      #[cfg(desktop)]
-      tauri_stop_v2ray_server
+      tauri_set_sysproxy
     ])
     // .plugin(tauri_plugin_shell::init())
     .setup(|app| {
       #[cfg(desktop)]
       {
-        if let Err(e) = extract_v2ray_if_need(app.handle()) {
-          eprintln!("解压 V2Ray 异常: {}", e);
-          std::process::exit(-1);
-        }
-
         let tray_menu = Menu::with_items(
           app.handle(),
           &[&PredefinedMenuItem::quit(app.handle(), Some("退出"))?],
@@ -117,8 +105,6 @@ pub fn run() {
             }
           }
         });
-
-        app.manage(V2RayProc::new());
       }
 
       #[cfg(target_os = "macos")]
@@ -131,29 +117,30 @@ pub fn run() {
 
   #[cfg(mobile)]
   {
-    app = app.plugin(tauri_plugin_cloudv2ray::init());
+    app
+      .run(tauri::generate_context!())
+      .expect("error while running tauri application");
   }
   #[cfg(desktop)]
   {
-    app = app.on_window_event(|window, event| match event {
-      tauri::WindowEvent::CloseRequested { api, .. } => {
-        #[cfg(target_os = "windows")]
-        {
-          window.hide().unwrap();
-        }
+    app
+      .on_window_event(|window, event| match event {
+        tauri::WindowEvent::CloseRequested { api, .. } => {
+          #[cfg(target_os = "windows")]
+          {
+            window.hide().unwrap();
+          }
 
-        #[cfg(target_os = "macos")]
-        {
-          tauri::AppHandle::hide(&window.app_handle()).unwrap();
-        }
+          #[cfg(target_os = "macos")]
+          {
+            tauri::AppHandle::hide(&window.app_handle()).unwrap();
+          }
 
-        api.prevent_close();
-      }
-      _ => {}
-    });
+          api.prevent_close();
+        }
+        _ => {}
+      })
+      .run(tauri::generate_context!())
+      .expect("error while running tauri application");
   }
-
-  app
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
 }

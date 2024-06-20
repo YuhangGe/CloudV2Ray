@@ -309,6 +309,20 @@
           ]
         },
         {
+          "description": "allow-getMobileDir -> Enables the getMobileDir command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-getMobileDir"
+          ]
+        },
+        {
+          "description": "deny-getMobileDir -> Denies the getMobileDir command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-getMobileDir"
+          ]
+        },
+        {
           "description": "allow-ping -> Enables the ping command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -320,6 +334,20 @@
           "type": "string",
           "enum": [
             "deny-ping"
+          ]
+        },
+        {
+          "description": "allow-register-listener -> Enables the register_listener command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-register-listener"
+          ]
+        },
+        {
+          "description": "deny-register-listener -> Denies the register_listener command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-register-listener"
           ]
         },
         {
@@ -390,6 +418,34 @@
           "type": "string",
           "enum": [
             "deny-stopVpn"
+          ]
+        },
+        {
+          "description": "allow-tauri-start-v2ray-server -> Enables the tauri_start_v2ray_server command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-tauri-start-v2ray-server"
+          ]
+        },
+        {
+          "description": "deny-tauri-start-v2ray-server -> Denies the tauri_start_v2ray_server command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-tauri-start-v2ray-server"
+          ]
+        },
+        {
+          "description": "allow-tauri-stop-v2ray-server -> Enables the tauri_stop_v2ray_server command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-tauri-stop-v2ray-server"
+          ]
+        },
+        {
+          "description": "deny-tauri-stop-v2ray-server -> Denies the tauri_stop_v2ray_server command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-tauri-stop-v2ray-server"
           ]
         },
         {

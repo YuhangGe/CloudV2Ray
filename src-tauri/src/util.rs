@@ -2,8 +2,8 @@ use anyhow_tauri::TAResult;
 use tauri::{AppHandle, Manager, Runtime};
 use uuid::Uuid;
 
-#[cfg(desktop)]
-use crate::v2ray::{stop_v2ray_server, V2RayProc};
+pub use tauri_plugin_cloudv2ray::emit_log;
+
 #[cfg(desktop)]
 use std::process;
 #[cfg(desktop)]
@@ -17,8 +17,7 @@ pub fn tauri_generate_uuid() -> TAResult<String> {
 
 #[cfg(desktop)]
 #[tauri::command]
-pub async fn tauri_exit_process(state: State<'_, V2RayProc>) -> TAResult<()> {
-  stop_v2ray_server(state).await;
+pub async fn tauri_exit_process() -> TAResult<()> {
   process::exit(0);
 }
 
@@ -30,9 +29,4 @@ pub fn tauri_open_devtools<R: Runtime>(h: AppHandle<R>) -> TAResult<()> {
     win.open_devtools();
   }
   Ok(())
-}
-
-pub fn emit_log<R: Runtime>(h: &AppHandle<R>, log_type: &str, log_message: &str) {
-  println!("{} ==> {}", log_type, log_message);
-  let _ = h.emit(log_type, log_message);
 }

@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-tauri-start-v2ray-server"
+description = "Enables the tauri_start_v2ray_server command without any pre-configured scope."
+commands.allow = ["tauri_start_v2ray_server"]
+
+[[permission]]
+identifier = "deny-tauri-start-v2ray-server"
+description = "Denies the tauri_start_v2ray_server command without any pre-configured scope."
+commands.deny = ["tauri_start_v2ray_server"]

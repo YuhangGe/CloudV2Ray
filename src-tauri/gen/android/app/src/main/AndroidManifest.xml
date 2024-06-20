@@ -5,6 +5,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.cloudv2ray"
+        android:extractNativeLibs="true"
         android:usesCleartextTraffic="${usesCleartextTraffic}">
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
@@ -17,6 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name="com.plugin.cloudv2ray.PluginReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="plugin.cloudv2ray" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"

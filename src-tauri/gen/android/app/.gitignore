@@ -9,4 +9,5 @@
 /universal
 /x86
 /x86_64
-src/main/assets/v2ray
+src/main/assets/*.zip
+libs
