@@ -1,8 +1,4 @@
-use std::{
-  io::Cursor,
-  path::{Path, PathBuf},
-  sync::Arc,
-};
+use std::{io::Cursor, sync::Arc};
 
 use tauri::{AppHandle, Manager, Runtime};
 
@@ -55,12 +51,10 @@ pub async fn stop_v2ray_server(state: State<'_, V2RayProc>) {
 #[cfg(desktop)]
 async fn start_v2ray_desktop_server<R: Runtime>(
   config: &str,
-  filesDir: Option<&str>,
-  libsDir: Option<&str>,
   h: AppHandle<R>,
   state: State<'_, V2RayProc>,
 ) -> anyhow::Result<String> {
-  extract_v2ray_if_need(&h, dir)?;
+  extract_v2ray_if_need(&h)?;
 
   emit_log(&h, "log::v2ray", "starting v2ray core server...");
   let v2ray_proc = state.0.clone();
@@ -176,6 +170,8 @@ async fn start_v2ray_mobile_server<R: Runtime>(
   h: AppHandle<R>,
   state: State<'_, V2RayProc>,
 ) -> anyhow::Result<String> {
+  use std::path::PathBuf;
+
   emit_log(&h, "log::v2ray", "starting v2ray core server...");
   let v2ray_proc = state.0.clone();
   if let Some(mut proc) = v2ray_proc.lock().await.take() {

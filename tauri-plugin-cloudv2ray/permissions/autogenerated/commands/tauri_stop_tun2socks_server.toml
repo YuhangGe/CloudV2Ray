@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-tauri-stop-tun2socks-server"
+description = "Enables the tauri_stop_tun2socks_server command without any pre-configured scope."
+commands.allow = ["tauri_stop_tun2socks_server"]
+
+[[permission]]
+identifier = "deny-tauri-stop-tun2socks-server"
+description = "Denies the tauri_stop_tun2socks_server command without any pre-configured scope."
+commands.deny = ["tauri_stop_tun2socks_server"]

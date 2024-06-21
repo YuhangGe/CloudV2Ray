@@ -9,5 +9,8 @@ permissions = [
   "allow-getMobileDir",
   "allow-tauri-start-v2ray-server",
   "allow-tauri-stop-v2ray-server",
+  "allow-tauri-start-tun2socks-server",
+  "allow-tauri-stop-tun2socks-server",
   "allow-register-listener",
+  "allow-remove-listener",
 ]

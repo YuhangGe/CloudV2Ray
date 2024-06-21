@@ -6,8 +6,6 @@ pub use tauri_plugin_cloudv2ray::emit_log;
 
 #[cfg(desktop)]
 use std::process;
-#[cfg(desktop)]
-use tauri::State;
 
 #[tauri::command]
 pub fn tauri_generate_uuid() -> TAResult<String> {

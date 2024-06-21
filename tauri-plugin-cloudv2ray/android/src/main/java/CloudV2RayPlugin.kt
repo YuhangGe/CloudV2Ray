@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.webkit.WebView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.tauri.annotation.ActivityCallback
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
@@ -22,18 +23,21 @@ import app.tauri.plugin.Plugin
 import java.io.*
 import java.util.zip.ZipFile
 
-
+@InvokeArg
+class StartVpnArg {
+    lateinit var config: String
+}
 
 @TauriPlugin
-class CloudV2RayPlugin(private val activity: Activity): Plugin(activity) {
-
+class CloudV2RayPlugin(val activity: Activity): Plugin(activity) {
+    private val receiver: PluginReceiver = PluginReceiver(this)
     override fun load(webView: WebView) {
         super.load(webView)
-        val receiver = PluginReceiver(this)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity.registerReceiver(receiver, IntentFilter("plugin.cloudv2ray"), Context.RECEIVER_NOT_EXPORTED)
+            activity.registerReceiver(receiver, IntentFilter("cloudv2ray"), Context.RECEIVER_EXPORTED)
         }else {
-            activity.registerReceiver(receiver, IntentFilter("plugin.cloudv2ray"))
+            activity.registerReceiver(receiver, IntentFilter())
         }
 //
 //        val cfgFile = File(activity.filesDir, "config.json")
@@ -62,26 +66,25 @@ class CloudV2RayPlugin(private val activity: Activity): Plugin(activity) {
     }
     @Command
     fun startVpn(invoke: Invoke) {
+        val args = invoke.parseArgs(StartVpnArg::class.java)
+        val conf = File(activity.filesDir, "tun2socks.conf")
+        conf.writeText(args.config)
         val it = VpnService.prepare(activity);
         if (it != null) {
             this.startActivityForResult(invoke, it, "onActivityResult")
         } else {
-            startVpn()
+            doStartVpn()
         }
         invoke.resolve(JSObject())
     }
 
-    private fun startVpn() {
-
-        activity.startService(Intent(activity, V2RayVpnService::class.java))
+    private fun doStartVpn() {
+        activity.startService(Intent(activity, V2RayVpnService::class.java).also { it.setAction(ACTION_CONNECT) })
     }
 
     @Command
     fun stopVpn(invoke: Invoke) {
-//        vpnService.stopService()
-        activity.stopService(Intent(activity, V2RayVpnService::class.java))
-
-//        activity.startService(Intent(activity, V2RayVpnService::class.java)).also { it.action =  }
+        activity.stopService(Intent(activity, V2RayVpnService::class.java).also { it.setAction(ACTION_DISCONNECT) })
         invoke.resolve(JSObject())
     }
 

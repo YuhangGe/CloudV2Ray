@@ -15,7 +15,7 @@ val tauriProperties = Properties().apply {
 
 android {
     compileSdk = 34
-    namespace = "com.cloudv2ray.dev"
+    namespace = "com.cloudv2ray.dev"  
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
         applicationId = "com.cloudv2ray.dev"
@@ -49,10 +49,8 @@ android {
     sourceSets {
         getByName("main") {
             jniLibs.srcDirs("libs")
-          
         }
     }
-
     kotlinOptions {
         jvmTarget = "1.8"
     }

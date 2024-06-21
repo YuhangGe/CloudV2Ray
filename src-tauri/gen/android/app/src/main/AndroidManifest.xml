@@ -19,12 +19,6 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.plugin.cloudv2ray.PluginReceiver" android:exported="false">
-            <intent-filter>
-                <action android:name="plugin.cloudv2ray" />
-            </intent-filter>
-        </receiver>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

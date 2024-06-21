@@ -4,25 +4,25 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import app.tauri.plugin.JSObject
-import app.tauri.plugin.Plugin
 
-class PluginReceiver(private val plugin: Plugin) : BroadcastReceiver() {
+class PluginReceiver(private val plugin: CloudV2RayPlugin) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        //toast "Broadcast received"
-        val type = intent.type;
+        println("onReceive ${intent.extras}")
+        val type = intent.getStringExtra("type")
         if (type == "vpn") {
             val fd =  intent.getIntExtra("fd", 0);
-            if (fd > 0) {
-                plugin.trigger("mobile::vpn-start", JSObject().also { it.put("vpnFd", fd) })
-            } else {
-                plugin.trigger("mobile::vpn-stop", JSObject())
-            }
+            val activity = plugin.activity;
+            plugin.trigger("mobile::vpn", JSObject().also {
+                it.put("filesDir", activity.filesDir.absolutePath)
+                it.put("libsDir", activity.applicationInfo.nativeLibraryDir)
+                it.put("vpnFd", fd)
+            })
             println("RECEIVE vpn $fd")
         } else if (type == "log") {
             val msg = intent.getStringExtra("message")
             println("RECEIVE log $msg")
-            plugin.trigger("mobile::log", JSObject().also { it.put("message", msg) })
+            plugin.trigger("log", JSObject().also { it.put("message", msg) })
         }
     }
 }

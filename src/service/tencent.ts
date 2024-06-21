@@ -51,7 +51,16 @@ async function callTencentApi<T>({
   if (res.status !== 200) {
     throw new Error(`bad status code: ` + res.status);
   }
-
+  // console.log('start call api...');
+  // const res = await invoke<string>('tauri_call_tencent_cloud_api', {
+  //   service,
+  //   version: ServiceVersionMap[service],
+  //   region: region ?? params.region,
+  //   action,
+  //   body,
+  //   auth: sign,
+  //   timestamp,
+  // });
   const resData = (await res.json()) as {
     Response: {
       Error?: { Code: string; Message: string };

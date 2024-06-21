@@ -4,7 +4,7 @@ import { Balance } from './Balance';
 import { Bandwidth } from './Bandwind';
 import { Price } from './Price';
 import { Sysproxy } from './Sysproxy';
-import { Socks } from './Socks';
+// import { Socks } from './Socks';
 import { globalStore } from '@/store/global';
 import type { CVMInstance } from '@/service/tencent';
 import { IS_IN_MOBILE, copyToClipboard } from '@/service/util';
@@ -91,8 +91,8 @@ const OverviewView: FC = () => {
           }
         </div>
       )}
-      {!IS_IN_MOBILE && <Sysproxy />}
-      {inst && IS_IN_MOBILE && <Socks inst={inst} />}
+      <Sysproxy />
+      {/* {inst && IS_IN_MOBILE && <Socks inst={inst} />} */}
       <Bandwidth />
       <Balance />
       <Price />

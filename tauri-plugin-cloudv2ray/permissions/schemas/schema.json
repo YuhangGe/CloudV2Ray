@@ -351,6 +351,20 @@
           ]
         },
         {
+          "description": "allow-remove-listener -> Enables the remove_listener command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-remove-listener"
+          ]
+        },
+        {
+          "description": "deny-remove-listener -> Denies the remove_listener command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-remove-listener"
+          ]
+        },
+        {
           "description": "allow-runV2RayCore -> Enables the runV2RayCore command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -421,6 +435,20 @@
           ]
         },
         {
+          "description": "allow-tauri-start-tun2socks-server -> Enables the tauri_start_tun2socks_server command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-tauri-start-tun2socks-server"
+          ]
+        },
+        {
+          "description": "deny-tauri-start-tun2socks-server -> Denies the tauri_start_tun2socks_server command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-tauri-start-tun2socks-server"
+          ]
+        },
+        {
           "description": "allow-tauri-start-v2ray-server -> Enables the tauri_start_v2ray_server command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -432,6 +460,20 @@
           "type": "string",
           "enum": [
             "deny-tauri-start-v2ray-server"
+          ]
+        },
+        {
+          "description": "allow-tauri-stop-tun2socks-server -> Enables the tauri_stop_tun2socks_server command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-tauri-stop-tun2socks-server"
+          ]
+        },
+        {
+          "description": "deny-tauri-stop-tun2socks-server -> Denies the tauri_stop_tun2socks_server command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-tauri-stop-tun2socks-server"
           ]
         },
         {
