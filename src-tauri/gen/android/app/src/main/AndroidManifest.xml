@@ -40,12 +40,15 @@
             <intent-filter>
                 <action android:name="android.net.VpnService" />
             </intent-filter>
-            <!--            <meta-data-->
-            <!--                android:name="android.net.VpnService.SUPPORTS_ALWAYS_ON"-->
-            <!--                android:value="true" />-->
-            <!--            <property-->
-            <!--                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"-->
-            <!--                android:value="vpn" />-->
+                        <meta-data
+                            android:name="android.net.VpnService.SUPPORTS_ALWAYS_ON"
+                            android:value="true" />
+                        <property
+                            android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                            android:value="vpn" />
         </service>
     </application>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+    android:minSdkVersion="34" />
 </manifest>

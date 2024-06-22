@@ -1,7 +1,7 @@
 [package]
 name = "tauri-plugin-cloudv2ray"
 version = "0.0.0"
-authors = [ "Yuhang Ge" ]
+authors = ["Yuhang Ge"]
 description = ""
 edition = "2021"
 rust-version = "1.70"
@@ -14,7 +14,12 @@ serde = "1.0"
 anyhow = "1"
 anyhow-tauri = "1"
 zip-extract = "0.1.3"
-tokio= {version = "*", features = ["process", "macros"] }
+tokio = { version = "*", features = ["process", "macros"] }
+tokio-util = "0.7"
+tun2proxy = "0.2"
+tun2 = { version = "2", features = ["async"] }
+env_logger = "0.11"
+log = "0.4"
 
 [build-dependencies]
 tauri-plugin = { version = "2.0.0-beta", features = ["build"] }

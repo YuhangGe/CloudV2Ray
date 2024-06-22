@@ -1,6 +1,0 @@
-tunnel:
-  mtu: 8500
-
-socks:
-  port: 7890
-  address: 127.0.0.1

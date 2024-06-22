@@ -31,6 +31,6 @@
   },
   "[toml]": {
     "editor.defaultFormatter": "tamasfe.even-better-toml"
-  },
-  "rust-analyzer.cargo.target": "aarch64-linux-android"
+  }
+  // "rust-analyzer.cargo.target": "aarch64-linux-android"
 }

@@ -14,8 +14,8 @@ class PluginReceiver(private val plugin: CloudV2RayPlugin) : BroadcastReceiver()
             val fd =  intent.getIntExtra("fd", 0);
             val activity = plugin.activity;
             plugin.trigger("mobile::vpn", JSObject().also {
-                it.put("filesDir", activity.filesDir.absolutePath)
-                it.put("libsDir", activity.applicationInfo.nativeLibraryDir)
+//                it.put("filesDir", activity.filesDir.absolutePath)
+//                it.put("libsDir", activity.applicationInfo.nativeLibraryDir)
                 it.put("vpnFd", fd)
             })
             println("RECEIVE vpn $fd")
