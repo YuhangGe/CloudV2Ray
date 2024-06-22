@@ -86,7 +86,8 @@ class CloudV2RayPlugin(val activity: Activity): Plugin(activity) {
 
     @Command
     fun stopVpn(invoke: Invoke) {
-        activity.stopService(Intent(activity, V2RayVpnService::class.java).also { it.setAction(ACTION_DISCONNECT) })
+        println("will stop vpn")
+        activity.startService(Intent(activity, V2RayVpnService::class.java).also { it.setAction(ACTION_DISCONNECT) })
         invoke.resolve(JSObject())
     }
 

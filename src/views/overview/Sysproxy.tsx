@@ -43,6 +43,9 @@ export const Sysproxy: FC = () => {
       } else {
         await invoke('plugin:cloudv2ray|stopVpn');
         await invoke('plugin:cloudv2ray|tauri_stop_tun2socks_server');
+        setSysprox(false);
+        setToggling(false);
+        void message.warning('VPN 已关闭！');
       }
     } catch (ex) {
       void message.error(`${ex}`);
