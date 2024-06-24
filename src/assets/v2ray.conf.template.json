@@ -1,8 +1,22 @@
 {
-  // "log": {
-  //   "access": "none",
-  //   "loglevel": "error"
-  // },
+  "log": {
+    "access": "none",
+    "loglevel": "error"
+  },
+  "policy": {
+    "levels": {
+      "8": {
+        "handshake": 4,
+        "connIdle": 300,
+        "uplinkOnly": 1,
+        "downlinkOnly": 1
+      }
+    },
+    "system": {
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  },
   "inbounds": [
     {
       "port": 7890, // 监听端口
@@ -12,6 +26,8 @@
         "destOverride": ["http", "tls"]
       },
       "settings": {
+        "udp": true,
+        "userLevel": 8,
         "auth": "noauth" //socks的认证设置，noauth 代表不认证，由于 socks 通常在客户端使用，所以这里不认证
       }
     },

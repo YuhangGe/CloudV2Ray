@@ -2,15 +2,15 @@
 [default]
 description = "Allows all commands"
 permissions = [
-  "allow-startV2RayCore",
-  "allow-stopV2RayCore",
-  "allow-startVpn",
-  "allow-stopVpn",
-  "allow-getMobileDir",
+  # "allow-startV2RayCore",
+  # "allow-stopV2RayCore",
+  # "allow-startVpn",
+  # "allow-stopVpn",
+  # "allow-getMobileDir",
   "allow-tauri-start-v2ray-server",
   "allow-tauri-stop-v2ray-server",
-  "allow-tauri-start-tun2socks-server",
-  "allow-tauri-stop-tun2socks-server",
-  "allow-register-listener",
-  "allow-remove-listener",
+  # "allow-tauri-start-tun2socks-server",
+  # "allow-tauri-stop-tun2socks-server",
+  # "allow-register-listener",
+  # "allow-remove-listener",
 ]

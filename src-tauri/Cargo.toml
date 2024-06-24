@@ -20,7 +20,11 @@ tauri-build = { version = "2.0.0-beta", features = [] }
 tauri-plugin-cloudv2ray = { path = "../tauri-plugin-cloudv2ray" }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "2.0.0-beta", features = ["tray-icon", "devtools", "image-png"] }
+tauri = { version = "2.0.0-beta", features = [
+    "tray-icon",
+    "devtools",
+    "image-png",
+] }
 tauri-plugin-http = "2.0.0-beta"
 anyhow = "1"
 anyhow-tauri = "1"
@@ -28,10 +32,6 @@ sha2 = "0.10"
 chrono = "0.4"
 hmac = "0.12"
 uuid = { version = "1.8", features = ["v4"] }
-
-[target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]
-zip-extract = "0.1.3"
-tokio= {version = "*", features = ["process", "macros"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 interfaces = "0.0.9"

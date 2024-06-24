@@ -7,7 +7,7 @@ import { Sysproxy } from './Sysproxy';
 // import { Socks } from './Socks';
 import { globalStore } from '@/store/global';
 import type { CVMInstance } from '@/service/tencent';
-import { copyToClipboard } from '@/service/util';
+import { IS_IN_MOBILE, copyToClipboard } from '@/service/util';
 
 const ShareCodeInner: FC<{ url: string }> = ({ url }) => {
   return <QRCode className='h-20 w-20' bordered={false} value={url}></QRCode>;
@@ -79,32 +79,34 @@ const OverviewView: FC = () => {
           </div>
         )}
       </div>
-      <div className='flex'>
-        <span className='mr-2 whitespace-nowrap pt-2'>本地代理：</span>
-        <div className='flex-shrink basis-56'>
-          <Tag
-            className='mr-0 w-full overflow-x-auto font-mono'
-            style={{
-              letterSpacing: '0.08em',
-            }}
-          >
-            {inst ? 'socks5://127.0.0.1:7890' : '-'}
-          </Tag>
-          {inst && (
+      {!IS_IN_MOBILE && (
+        <div className='flex'>
+          <span className='mr-2 whitespace-nowrap pt-2'>本地代理：</span>
+          <div className='flex-shrink basis-56'>
             <Tag
-              className='mr-0 mt-2 w-full overflow-x-auto font-mono'
-              style={{ letterSpacing: '0.15em' }}
+              className='mr-0 w-full overflow-x-auto font-mono'
+              style={{
+                letterSpacing: '0.08em',
+              }}
             >
-              {inst ? 'http://127.0.0.1:7891' : '-'}
+              {inst ? 'socks5://127.0.0.1:7890' : '-'}
             </Tag>
-          )}
+            {inst && (
+              <Tag
+                className='mr-0 mt-2 w-full overflow-x-auto font-mono'
+                style={{ letterSpacing: '0.15em' }}
+              >
+                {inst ? 'http://127.0.0.1:7891' : '-'}
+              </Tag>
+            )}
+          </div>
+          {
+            // 占位，和远程地址保持对齐
+            inst && <div className='ml-2 w-10 shrink-0'></div>
+          }
         </div>
-        {
-          // 占位，和远程地址保持对齐
-          inst && <div className='ml-2 w-10 shrink-0'></div>
-        }
-      </div>
-      <Sysproxy />
+      )}
+      {!IS_IN_MOBILE && <Sysproxy />}
       {/* {inst && IS_IN_MOBILE && <Socks inst={inst} />} */}
       <Bandwidth />
       <Balance />

@@ -32,11 +32,11 @@
         <service
             android:name="com.plugin.cloudv2ray.V2RayVpnService"
             android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/main_activity_title"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:foregroundServiceType="specialUse"
-            android:process=":RunV2RayCoreDaemon">
+            android:process=":native">
             <intent-filter>
                 <action android:name="android.net.VpnService" />
             </intent-filter>
@@ -45,10 +45,14 @@
                             android:value="true" />
                         <property
                             android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                            android:value="vpn" />
+                            android:value="VPN service" />
         </service>
     </application>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
-    android:minSdkVersion="34" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+      android:minSdkVersion="34" />
 </manifest>

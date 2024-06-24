@@ -17,8 +17,7 @@ export const ContextMenu: FC = () => {
   const el = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handle = (ev: MouseEvent) => {
-      console.log((ev.target as HTMLInputElement).tagName);
-      if (ev.target.tagName === 'INPUT') return;
+      if ((ev.target as HTMLElement).tagName === 'INPUT') return;
       ev.preventDefault();
       if (!el.current) return;
       el.current.style.left = `${ev.pageX}px`;
