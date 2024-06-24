@@ -18,8 +18,8 @@ tokio = { version = "*", features = ["process", "macros"] }
 tokio-util = "0.7"
 tun2proxy = "0.2"
 tun2 = { version = "2", features = ["async"] }
-env_logger = "0.11"
 log = "0.4"
+jni = "0.19"
 
 [build-dependencies]
 tauri-plugin = { version = "2.0.0-beta", features = ["build"] }

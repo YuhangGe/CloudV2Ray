@@ -2034,6 +2034,20 @@ dependencies = [
 
 [[package]]
 name = "jni"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6df18c2e3db7e453d3c6ac5b3e9d5182664d28788126d39b91f2d1e22b017ec"
+dependencies = [
+ "cesu8",
+ "combine",
+ "jni-sys",
+ "log",
+ "thiserror",
+ "walkdir",
+]
+
+[[package]]
+name = "jni"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a87aa2bb7d2af34197c04845522473242e1aa17c12f4935d5856491a7fb8c97"
@@ -2410,6 +2424,7 @@ dependencies = [
  "cfg-if",
  "cfg_aliases 0.2.1",
  "libc",
+ "memoffset 0.9.1",
 ]
 
 [[package]]
@@ -3942,7 +3957,7 @@ dependencies = [
  "gdkx11-sys",
  "gtk",
  "instant",
- "jni",
+ "jni 0.21.1",
  "lazy_static",
  "libc",
  "log",
@@ -3999,7 +4014,7 @@ dependencies = [
  "heck 0.5.0",
  "http",
  "image",
- "jni",
+ "jni 0.21.1",
  "libc",
  "log",
  "mime",
@@ -4116,7 +4131,7 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "anyhow-tauri",
- "env_logger 0.11.3",
+ "jni 0.19.0",
  "log",
  "serde",
  "tauri",
@@ -4177,7 +4192,7 @@ dependencies = [
  "dpi",
  "gtk",
  "http",
- "jni",
+ "jni 0.21.1",
  "raw-window-handle 0.6.2",
  "serde",
  "serde_json",
@@ -4196,7 +4211,7 @@ dependencies = [
  "cocoa",
  "gtk",
  "http",
- "jni",
+ "jni 0.21.1",
  "log",
  "percent-encoding",
  "raw-window-handle 0.6.2",
@@ -4678,10 +4693,10 @@ dependencies = [
  "hashlink",
  "httparse",
  "ipstack",
- "jni",
+ "jni 0.21.1",
  "lazy_static",
  "log",
- "nix 0.26.4",
+ "nix 0.29.0",
  "percent-encoding",
  "serde",
  "serde_json",
@@ -5540,7 +5555,7 @@ dependencies = [
  "html5ever",
  "http",
  "javascriptcore-rs",
- "jni",
+ "jni 0.21.1",
  "kuchikiki",
  "libc",
  "ndk",

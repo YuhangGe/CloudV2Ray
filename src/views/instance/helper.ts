@@ -11,15 +11,9 @@ import {
   ModifyCommand,
   type CVMInstance,
 } from '@/service/tencent';
-import { IS_IN_MOBILE, renderTpl } from '@/service/util';
+import { renderTpl } from '@/service/util';
 import { appendLog } from '@/store/log';
 import { getInstanceAgentShell } from '@/service/instance';
-
-// if (IS_IN_MOBILE) {
-//   configTpl.outbounds.length = 1;
-//   delete (configTpl as any)['routing'];
-// }
-// const configTplStr = JSON.stringify(configTpl);
 
 export async function loadInstance(id?: string) {
   return await DescribeInstances({
@@ -179,29 +173,23 @@ export async function pingV2RayInterval() {
   );
   return true;
 }
-
-export async function startV2RayCore() {
+export function getV2RayCoreConf() {
   const settings = globalStore.get('settings');
   const inst = globalStore.get('instance');
-  if (!inst) return false;
+  if (!inst) return '';
   const ip = inst.PublicIpAddresses?.[0];
-  if (!ip) return false;
-
+  if (!ip) return '';
+  return renderTpl(configTpl, {
+    REMOTE_IP: ip,
+    TOKEN: settings.token,
+  });
+}
+export async function startV2RayCore() {
+  const conf = getV2RayCoreConf();
+  if (!conf) return false;
   try {
-    // const tpl = IS_IN_MOBILE
-    //   ? configTpl.replace(/,\s*\/\*mobile-ignore\*\/[\d\D]+?\/\*mobile-ignore-end\*\//g, '')
-    //   : configTpl;
-    const dirs: { filesDir?: string; libsDir?: string } = IS_IN_MOBILE
-      ? await invoke('plugin:cloudv2ray|getMobileDir')
-      : {};
-    // console.log('DIRS', dirs.filesDir, dirs.libsDir);
     await invoke('plugin:cloudv2ray|tauri_start_v2ray_server', {
-      filesDir: dirs.filesDir ?? '',
-      libsDir: dirs.libsDir ?? '',
-      config: renderTpl(configTpl, {
-        REMOTE_IP: ip,
-        TOKEN: settings.token,
-      }),
+      config: conf,
     });
     return true;
   } catch (ex) {

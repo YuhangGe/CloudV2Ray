@@ -1,48 +1,52 @@
 import type { PluginListener } from '@tauri-apps/api/core';
-import { addPluginListener, invoke } from '@tauri-apps/api/core';
+import { invoke } from '@tauri-apps/api/core';
 import { App, Switch } from 'antd';
 import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
+import { getV2RayCoreConf } from '../instance/helper';
 import { IS_IN_MOBILE } from '@/service/util';
+import tun2socksConf from '@/assets/tun2socks.conf.template.yaml?raw';
 
 export const Sysproxy: FC = () => {
   const { message } = App.useApp();
   const [toggling, setToggling] = useState(false);
   const [sysproxy, setSysprox] = useState(false);
   const lis = useRef<PluginListener>();
-  type Arg = {
-    vpnFd: number;
-  };
-  const handleVpn = async (arg: Arg, enabled: boolean) => {
-    try {
-      await invoke('plugin:cloudv2ray|tauri_start_tun2socks_server', {
-        ...arg,
-      });
-      setSysprox(enabled);
-      void message.success('VPN 启用成功！');
-    } catch (ex) {
-      void message.error(`${ex}`);
-    } finally {
-      setToggling(false);
-    }
-  };
+  // type Arg = {
+  //   vpnFd: number;
+  // };
+  // const handleVpn = async (arg: Arg, enabled: boolean) => {
+  //   try {
+  //     await invoke('plugin:cloudv2ray|tauri_start_tun2socks_server', {
+  //       ...arg,
+  //     });
+  //     setSysprox(enabled);
+  //     void message.success('VPN 启用成功！');
+  //   } catch (ex) {
+  //     void message.error(`${ex}`);
+  //   } finally {
+  //     setToggling(false);
+  //   }
+  // };
   const toggleMobileVpn = async (enabled: boolean) => {
     try {
       setToggling(true);
 
       if (enabled) {
-        if (lis.current) await lis.current.unregister();
-        lis.current = await addPluginListener('cloudv2ray', 'mobile::vpn', (arg: Arg) => {
-          if (lis.current) {
-            void lis.current.unregister(); // listen only once
-            lis.current = undefined;
-          }
-          void handleVpn(arg, enabled);
+        // if (lis.current) await lis.current.unregister();
+        // lis.current = await addPluginListener('cloudv2ray', 'mobile::vpn', (arg: Arg) => {
+        //   if (lis.current) {
+        //     void lis.current.unregister(); // listen only once
+        //     lis.current = undefined;
+        //   }
+        //   void handleVpn(arg, enabled);
+        // });
+        await invoke('plugin:cloudv2ray|startVpn', {
+          v2rayConf: getV2RayCoreConf(),
+          tun2socksConf,
         });
-        await invoke('plugin:cloudv2ray|startVpn');
       } else {
         await invoke('plugin:cloudv2ray|stopVpn');
-        await invoke('plugin:cloudv2ray|tauri_stop_tun2socks_server');
         setSysprox(false);
         setToggling(false);
         void message.warning('VPN 已关闭！');

@@ -1,7 +1,7 @@
 import { App as AntApp, Button, Dropdown, Spin, Tooltip } from 'antd';
 import { Suspense, lazy, useEffect, useMemo, useState, type FC } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { cs, useQuery } from './service/util';
+import { IS_IN_MOBILE, cs, useQuery } from './service/util';
 import { globalStore } from './store/global';
 import { useLogListen } from './views/logview/listen';
 import { appendLog } from './store/log';
@@ -73,7 +73,7 @@ export const Layout: FC = () => {
         void message.error('pingV2RayInterval 失败，请尝试退出后重启 CloudV2Ray。');
         return;
       }
-      if (!(await startV2RayCore())) {
+      if (!IS_IN_MOBILE && !(await startV2RayCore())) {
         void message.error('本地 v2ray-core 启动失败，请尝试退出后重启 CloudV2Ray。');
       }
     } catch (ex) {

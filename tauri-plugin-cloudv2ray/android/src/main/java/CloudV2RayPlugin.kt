@@ -23,10 +23,11 @@ import app.tauri.plugin.Plugin
 import java.io.*
 import java.util.zip.ZipFile
 
-//@InvokeArg
-//class StartVpnArg {
-//    lateinit var config: String
-//}
+@InvokeArg
+class StartVpnArg {
+    lateinit var v2rayConf: String
+    lateinit var tun2socksConf: String
+}
 
 @TauriPlugin
 class CloudV2RayPlugin(val activity: Activity): Plugin(activity) {
@@ -63,9 +64,12 @@ class CloudV2RayPlugin(val activity: Activity): Plugin(activity) {
     }
     @Command
     fun startVpn(invoke: Invoke) {
-//        val args = invoke.parseArgs(StartVpnArg::class.java)
-//        val conf = File(activity.filesDir, "tun2socks.conf")
-//        conf.writeText(args.config)
+        val args = invoke.parseArgs(StartVpnArg::class.java)
+        val v2rayConf = File(activity.filesDir, "v2ray.conf")
+        v2rayConf.writeText(args.v2rayConf)
+        val tun2socksConf = File(activity.filesDir, "tun2socks.conf")
+        tun2socksConf.writeText(args.tun2socksConf)
+
         val it = VpnService.prepare(activity);
         if (it != null) {
             this.startActivityForResult(invoke, it, "onActivityResult")

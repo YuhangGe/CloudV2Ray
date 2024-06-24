@@ -1,14 +1,20 @@
 package com.plugin.cloudv2ray
 
+import android.R
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
+import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
+import androidx.core.app.NotificationCompat
+import java.io.BufferedReader
 import java.io.File
+import java.io.InputStreamReader
 import kotlin.system.exitProcess
+
 
 const val ACTION_CONNECT: String = "hev.sockstun.CONNECT"
 
@@ -21,15 +27,16 @@ class V2RayVpnService : VpnService() {
 //  private external fun TProxyStopService()
 //  private external fun TProxyGetStats(): LongArray?
 //
-
-
+//  private external fun startV2Ray(vpnFd: Int)
+//
 //  init {
-//    System.loadLibrary("hev-socks5-tunnel");
+//    System.loadLibrary("cloudv2ray_lib")
 //  }
-
 //  private val tun: Tun2proxy = Tun2proxy()
 
+  private val tunService = TProxyService()
   private var vpnInterface: ParcelFileDescriptor? = null
+  private var v2rayCoreProcess: Process? = null
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     println("on s cmd ${intent?.action}")
@@ -52,46 +59,116 @@ class V2RayVpnService : VpnService() {
     super.onRevoke()
   }
 
+  private fun startV2RayCore(): Boolean {
+
+
+    try {
+      if (v2rayCoreProcess != null) {
+        v2rayCoreProcess!!.destroy()
+      }
+
+    } catch (e: Exception) {
+      println("failed destroy previous v2ray core: ${e.message}")
+      return false
+    }
+
+    val v2rayCfg = File(filesDir, "v2ray.conf")
+    if (!v2rayCfg.exists()) {
+      println("v2ray.conf not found")
+      return false
+    }
+
+    val cmd = arrayListOf(applicationInfo.nativeLibraryDir + File.separator + "libv2ray.so", "run", "-c", v2rayCfg.absolutePath, "-format", "json")
+    println("exec ${cmd.joinToString()}");
+
+    try {
+
+      val pb = ProcessBuilder(cmd)
+      val env = pb.environment()
+      env.put("v2ray.location.asset", filesDir.absolutePath)
+      pb.redirectErrorStream(true)
+
+      v2rayCoreProcess = pb.directory(filesDir).start()
+
+      Thread(Runnable {
+        try {
+          val br = BufferedReader(InputStreamReader(v2rayCoreProcess!!.inputStream))
+          var line = br.readLine();
+          while(line != null) {
+            println(line)
+            line = br.readLine()
+          }
+        } catch (e: Exception) {
+          println("v2ray core: error readLine: ${e.message}")
+        }
+        println("v2ray-core process end")
+
+      }).start()
+      return true
+    } catch(e: Exception) {
+      println("error !!! ${e.message}")
+      return false
+    }
+  }
+
 
   private fun connect() {
-    vpnInterface = createVpnInterface()
-    if (vpnInterface == null) {
-      println("failed to create vpn interface")
+    if (vpnInterface != null) {
+      vpnInterface!!.close()
+    }
+
+//    vpnInterface = createVpnInterface()
+//    if (vpnInterface == null) {
+//      println("failed to create vpn interface")
+//      stopSelf()
+//      return
+//    }
+
+    if (!(startV2RayCore())) {
+      println("failed to start v2ray core")
       stopSelf()
       return
     }
-    sendBroadcast(Intent("cloudv2ray").also {
-      it.putExtra("type", "vpn")
-      it.putExtra("fd", vpnInterface!!.fd)
-    })
-//    println(File(this.filesDir, "tun2socks.conf").readText())
-//    val conf = File(this.filesDir, "tun2socks.conf").absolutePath
-//    TProxyStartService(conf, vpnInterface!!.fd)
-//    println("will start tun2socks")
-//    Thread(Runnable {
-//      TProxyStartService(conf, vpnInterface!!.fd)
-//      println("tun2socks !!!!!")
-//    }).start()
-//    tun.run("SOCKS5://127.0.0.1:7890", vpnInterface!!.fd,
-//      false,
-//      8500,
-//      2,
-//      3)
-//    println("tun2socks !!!!!")
 
+    val tun2socksConf = File(filesDir, "tun2socks.conf")
+    if (!tun2socksConf.exists()) {
+      println("tun2socks.conf not found")
+      stopSelf()
+      return
+    }
+//    Thread(Runnable {
+//      tunService.TProxyStartService(tun2socksConf.absolutePath, vpnInterface!!.fd)
+//      println("tun proxy end")
+//    }).start()
+
+    val channelName = "CloudV2Ray"
+    initNotificationChannel(channelName)
+    createNotification(channelName)
   }
 
   private fun disconnect() {
-    println("will disconnect tun2socks")
-    if (vpnInterface == null) return
-//    TProxyStopService()
-//    tun.stop()
+    println("V2RayVpnService will disconnect")
     try {
-      vpnInterface!!.close()
+      if (vpnInterface != null) {
+        vpnInterface!!.close()
+      }
     } catch (e: Exception) {
       // ignore
     }
-    vpnInterface = null;
+    try {
+      if (v2rayCoreProcess != null) {
+        v2rayCoreProcess!!.destroy()
+      }
+    } catch (e: Exception) {
+      // ignore
+    }
+    try {
+      tunService.TProxyStopService()
+    } catch (e: Exception) {
+      // ignore
+    }
+    v2rayCoreProcess = null
+    vpnInterface = null
     exitProcess(0)
   }
 
@@ -131,4 +208,30 @@ class V2RayVpnService : VpnService() {
       .establish()
   }
 
+  private fun createNotification(channelName: String) {
+    val i = Intent(this, V2RayVpnService::class.java)
+    val pi = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_IMMUTABLE)
+    val notification = NotificationCompat.Builder(this, channelName)
+    val notify = notification
+      .setContentTitle("CloudV2Ray")
+      .setSmallIcon(R.drawable.sym_def_app_icon)
+      .setContentIntent(pi)
+      .build()
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      println("start foreground PPPPPP")
+      startForeground(1, notify)
+    } else {
+      println("start foreground PPPPPP2")
+      startForeground(1, notify, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+    }
+  }
+
+  // create NotificationChannel
+  private fun initNotificationChannel(channelName: String) {
+    val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val channel = NotificationChannel(channelName, "CloudV2Ray", NotificationManager.IMPORTANCE_DEFAULT)
+      notificationManager.createNotificationChannel(channel)
+    }
+  }
 }

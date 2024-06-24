@@ -75,23 +75,23 @@ async fn start_tun2socks_server<R: Runtime>(
   // Ok(format!("{{\"pid\":{}}}", pid))
 }
 
-#[tauri::command]
-pub async fn tauri_start_tun2socks_server<R: Runtime>(
-  vpn_fd: i32,
-  handle: AppHandle<R>,
-  state: State<'_, Tun2SocksProc>,
-) -> TAResult<String> {
-  start_tun2socks_server(vpn_fd, handle, state)
-    .await
-    .into_ta_result()
-}
+// #[tauri::command]
+// pub async fn tauri_start_tun2socks_server<R: Runtime>(
+//   vpn_fd: i32,
+//   handle: AppHandle<R>,
+//   state: State<'_, Tun2SocksProc>,
+// ) -> TAResult<String> {
+//   start_tun2socks_server(vpn_fd, handle, state)
+//     .await
+//     .into_ta_result()
+// }
 
-#[tauri::command]
-pub async fn tauri_stop_tun2socks_server<R: Runtime>(
-  handle: AppHandle<R>,
-  state: State<'_, Tun2SocksProc>,
-) -> TAResult<()> {
-  stop_tun2socks_server(state).await;
-  emit_log(&handle, "log::v2ray", "tun2socks server stopped.");
-  Ok(()).into_ta_result()
-}
+// #[tauri::command]
+// pub async fn tauri_stop_tun2socks_server<R: Runtime>(
+//   handle: AppHandle<R>,
+//   state: State<'_, Tun2SocksProc>,
+// ) -> TAResult<()> {
+//   stop_tun2socks_server(state).await;
+//   emit_log(&handle, "log::v2ray", "tun2socks server stopped.");
+//   Ok(()).into_ta_result()
+// }

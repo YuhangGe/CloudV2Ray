@@ -48,7 +48,6 @@ pub async fn stop_v2ray_server(state: State<'_, V2RayProc>) {
   };
 }
 
-#[cfg(desktop)]
 async fn start_v2ray_desktop_server<R: Runtime>(
   config: &str,
   h: AppHandle<R>,
@@ -114,7 +113,6 @@ async fn start_v2ray_desktop_server<R: Runtime>(
   Ok(format!("{{\"pid\":{}}}", pid))
 }
 
-#[cfg(desktop)]
 const fn get_platform_zip_file() -> &'static str {
   if cfg!(target_os = "windows") {
     if cfg!(target_arch = "x86_64") {
@@ -133,7 +131,6 @@ const fn get_platform_zip_file() -> &'static str {
   }
 }
 
-#[cfg(desktop)]
 pub fn extract_v2ray_if_need<R: Runtime>(h: &AppHandle<R>) -> anyhow::Result<()> {
   let resource_path = h.path().resource_dir()?;
   println!("{:?}", resource_path);
@@ -162,86 +159,75 @@ pub fn extract_v2ray_if_need<R: Runtime>(h: &AppHandle<R>) -> anyhow::Result<()>
   Ok(())
 }
 
-#[cfg(mobile)]
-async fn start_v2ray_mobile_server<R: Runtime>(
-  config: &str,
-  files_dir: &str,
-  libs_dir: &str,
-  h: AppHandle<R>,
-  state: State<'_, V2RayProc>,
-) -> anyhow::Result<String> {
-  use std::path::PathBuf;
+// #[cfg(mobile)]
+// pub async fn start_v2ray_mobile_server<R: Runtime>(
+//   config: &str,
+//   files_dir: &str,
+//   libs_dir: &str,
+//   h: AppHandle<R>,
+//   state: State<'_, V2RayProc>,
+// ) -> anyhow::Result<String> {
+//   use std::path::PathBuf;
 
-  emit_log(&h, "log::v2ray", "starting v2ray core server...");
-  let v2ray_proc = state.0.clone();
-  if let Some(mut proc) = v2ray_proc.lock().await.take() {
-    // 如果存在旧的 v2ray 进程，先关闭。
-    let _ = proc.kill().await;
-  }
+//   emit_log(&h, "log::v2ray", "starting v2ray core server...");
+//   let v2ray_proc = state.0.clone();
+//   if let Some(mut proc) = v2ray_proc.lock().await.take() {
+//     // 如果存在旧的 v2ray 进程，先关闭。
+//     let _ = proc.kill().await;
+//   }
 
-  // println!("{:?}", resource_path);
-  let v2ray_bin = PathBuf::from(libs_dir).join("libv2ray.so");
-  if !v2ray_bin.exists() {
-    anyhow::bail!("v2ray not found.");
-    // std::fs::remove_dir_all(&v2ray_bin_dir)?;
-  }
-  let cwd = PathBuf::from(files_dir);
-  let config_file = cwd.join("config.json");
-  tokio::fs::write(&config_file, config).await?;
+//   // println!("{:?}", resource_path);
+//   let v2ray_bin = PathBuf::from(libs_dir).join("libv2ray.so");
+//   if !v2ray_bin.exists() {
+//     anyhow::bail!("v2ray not found.");
+//     // std::fs::remove_dir_all(&v2ray_bin_dir)?;
+//   }
+//   let cwd = PathBuf::from(files_dir);
+//   let config_file = cwd.join("config.json");
+//   tokio::fs::write(&config_file, config).await?;
 
-  let mut command = tokio::process::Command::new(v2ray_bin);
-  command.arg("run");
-  command.arg("-c");
-  command.arg(config_file.to_str().unwrap());
-  command.env("v2ray.location.asset", files_dir);
-  command.stdout(std::process::Stdio::piped());
-  command.stderr(std::process::Stdio::piped());
-  command.stdin(std::process::Stdio::piped());
-  command.current_dir(files_dir);
+//   let mut command = tokio::process::Command::new(v2ray_bin);
+//   command.arg("run");
+//   command.arg("-c");
+//   command.arg(config_file.to_str().unwrap());
+//   command.env("v2ray.location.asset", files_dir);
+//   command.stdout(std::process::Stdio::piped());
+//   command.stderr(std::process::Stdio::piped());
+//   command.stdin(std::process::Stdio::piped());
+//   command.current_dir(files_dir);
 
-  let mut proc = command.spawn()?;
-  let pid = proc.id().unwrap();
-  emit_log(&h, "log::v2ray", &format!("v2ray core pid: {}", pid));
+//   let mut proc = command.spawn()?;
+//   let pid = proc.id().unwrap();
+//   emit_log(&h, "log::v2ray", &format!("v2ray core pid: {}", pid));
 
-  tokio::task::spawn(async move {
-    drop(proc.stdin.take());
-    let stdo = proc.stdout.take().unwrap();
-    let stde = proc.stderr.take().unwrap();
-    {
-      v2ray_proc.clone().lock().await.replace(proc);
-    }
+//   tokio::task::spawn(async move {
+//     drop(proc.stdin.take());
+//     let stdo = proc.stdout.take().unwrap();
+//     let stde = proc.stderr.take().unwrap();
+//     {
+//       v2ray_proc.clone().lock().await.replace(proc);
+//     }
 
-    tokio::join!(read(stdo, &h), read(stde, &h));
-    // let mut buffer = Vec::<u8>::with_capacity(10);
+//     tokio::join!(read(stdo, &h), read(stde, &h));
+//     // let mut buffer = Vec::<u8>::with_capacity(10);
 
-    {
-      v2ray_proc.clone().lock().await.take();
-    }
-  });
+//     {
+//       v2ray_proc.clone().lock().await.take();
+//     }
+//   });
 
-  Ok(format!("{{\"pid\":{}}}", pid))
-}
+//   Ok(format!("{{\"pid\":{}}}", pid))
+// }
 
 #[tauri::command]
 pub async fn tauri_start_v2ray_server<R: Runtime>(
   config: &str,
-  files_dir: &str,
-  libs_dir: &str,
   handle: AppHandle<R>,
   state: State<'_, V2RayProc>,
 ) -> TAResult<String> {
-  #[cfg(desktop)]
-  {
-    start_v2ray_desktop_server(config, handle, state)
-      .await
-      .into_ta_result()
-  }
-  #[cfg(mobile)]
-  {
-    start_v2ray_mobile_server(config, files_dir, libs_dir, handle, state)
-      .await
-      .into_ta_result()
-  }
+  start_v2ray_desktop_server(config, handle, state)
+    .await
+    .into_ta_result()
 }
 
 #[tauri::command]
