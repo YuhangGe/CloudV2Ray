@@ -1,6 +1,6 @@
 {
   "log": {
-    "access": "none",
+    // "access": "none",
     "loglevel": "error"
   },
   "policy": {

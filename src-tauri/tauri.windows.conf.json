@@ -1,5 +1,6 @@
 {
   "bundle": {
+    "targets": "msi",
     "resources": ["resources/v2ray-windows-x64.zip"]
   },
   "$schema": "../node_modules/@tauri-apps/cli/schema.json"

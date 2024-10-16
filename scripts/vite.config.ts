@@ -42,6 +42,9 @@ export default defineConfig({
       ignored: ['**/src-tauri/**'],
     },
   },
+  build: {
+    target: 'esnext',
+  },
   plugins: [
     react(),
     imagemin({
