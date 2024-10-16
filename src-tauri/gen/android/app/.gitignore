@@ -4,10 +4,3 @@
 /tauri.build.gradle.kts
 /proguard-tauri.pro
 /tauri.properties
-/arm
-/arm64
-/universal
-/x86
-/x86_64
-src/main/assets/*.zip
-libs

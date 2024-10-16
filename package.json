@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite dev -c scripts/vite.config.ts",
     "build": "tsc && vite build -c scripts/vite.config.ts",
+    "build-apk": "tauri android build --apk --target aarch64",
     "preview": "vite preview -c scripts/vite.config.ts",
     "lint-fix": "eslint . --fix && prettier --log-level=warn --write .",
     "lint": "eslint '**/*.{js,mjs,ts}' && prettier --check .",

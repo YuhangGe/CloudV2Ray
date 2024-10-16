@@ -1,6 +1,6 @@
 {
   "bundle": {
-    "resources": ["resources/v2ray-macos-x64.zip", "resources/v2ray-macos-arm64.zip"]
+    "resources": ["resources/v2ray-macos-arm64.zip"]
   },
   "$schema": "../node_modules/@tauri-apps/cli/schema.json"
 }
