@@ -29,7 +29,7 @@ export const createInstanceAndInstallV2Ray = async () => {
   msg.update('正在等待主机启动...');
   const instWithEip = await waitInstanceReady(res);
   globalStore.set('instance', instWithEip);
-  if (globalStore.get('settings').imageType === 'PRIVATE_IMAGE') {
+  if (globalStore.get('settings').imageType === 'PUBLIC_IMAGE') {
     await installV2RayAgentOnInstance(instWithEip, msg);
   } else {
     msg.update('正在等待 v2ray 服务上线...');
