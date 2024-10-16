@@ -5,7 +5,8 @@ const pwd = [
   'abcdefghijklmnopqrstuvwxyz', // lower chars
   'ABCDEFGHIJKLMNOPQRSTUVWXYZ', // upper chars
   '0123456789', // number
-  "`!?$?%^&*()_-+={[}]:;@'~#|\\<>.?/];", //special chars
+  '@$%',
+  // "`!?$?%^&*()_-+={[}]:;@'~#|\\<>.?/];", //special chars
 ];
 export function generateStrongPassword() {
   return new Array(20)
@@ -86,7 +87,7 @@ export function useQuery<T = string>(key: string, defaultValue: T) {
       const q = new URLSearchParams(location.search);
       q.set(key, newValue as string);
       const url = location.pathname;
-      window.history.replaceState(null, '', url + `?${q.toString()}`);
+      window.history.replaceState(null, '', `${url}?${q.toString()}`);
       setV(newValue);
     },
   ] as [T, (newValue: T) => void];
@@ -94,7 +95,7 @@ export function useQuery<T = string>(key: string, defaultValue: T) {
 
 export function renderTpl(tpl: string, ctx: Record<string, unknown>) {
   Object.entries(ctx).forEach(([k, v]) => {
-    const r = new RegExp('\\$' + k + '\\$', 'g');
+    const r = new RegExp(`\\$${k}\\$`, 'g');
     tpl = tpl.replace(r, v as string);
   });
   return tpl;

@@ -3,13 +3,13 @@ import { fetch } from '@tauri-apps/plugin-http';
 import { globalStore } from '@/store/global';
 import configTpl from '@/assets/v2ray.conf.template.json?raw';
 import {
+  type CVMInstance,
   CreateCommand,
   DescribeAutomationAgentStatus,
   DescribeCommands,
   DescribeInstances,
   InvokeCommand,
   ModifyCommand,
-  type CVMInstance,
 } from '@/service/tencent';
 import { renderTpl } from '@/service/util';
 import { appendLog } from '@/store/log';
@@ -33,7 +33,6 @@ export async function loadInstance(id?: string) {
 }
 
 export async function waitInstanceReady(inst: CVMInstance) {
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     await new Promise((res) => setTimeout(res, 1000));
     const [err, res] = await loadInstance(inst.InstanceId);
@@ -49,7 +48,6 @@ export async function waitInstanceReady(inst: CVMInstance) {
 }
 
 export async function waitInstanceAutomationAgentReady(inst: CVMInstance) {
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const [err, res] = await DescribeAutomationAgentStatus({
       InstanceIds: [inst.InstanceId],
@@ -130,7 +128,7 @@ export async function pingV2RayOnce(inst: CVMInstance) {
     const url = `http://${ip}:2081/ping?token=${settings.token}`;
     appendLog(`[ping] ==> ${url}`);
     const res = await fetch(url);
-    if (res.status !== 200) throw new Error(`bad response status: ` + res.status);
+    if (res.status !== 200) throw new Error(`bad response status: ${res.status}`);
     const txt = await res.text();
     return txt === 'pong!';
   } catch (ex) {

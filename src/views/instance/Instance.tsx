@@ -1,5 +1,5 @@
 import { Button, Tag, message } from 'antd';
-import { useEffect, useState, type FC } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { loadInstance } from './helper';
 import { globalStore } from '@/store/global';
 import { copyToClipboard } from '@/service/util';

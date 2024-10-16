@@ -67,29 +67,33 @@ export const InstancePanel: FC<{
   }, [region, zone]);
 
   const [imageOptions, setImageOptions] = useState<DefaultOptionType[]>([]);
-  useEffect(() => {
-    void DescribeImages({
+  const loadImages = async (imageType: Settings['imageType']) => {
+    const Filters = [{ Name: 'image-type', Values: [imageType as string] }];
+    if (imageType === 'PUBLIC_IMAGE') {
+      Filters.push({
+        Name: 'platform',
+        Values: ['Ubuntu'],
+      });
+    }
+    const [err, res] = await DescribeImages({
       region,
-      Filters: [
-        {
-          Name: 'image-type',
-          Values: ['PUBLIC_IMAGE'],
-        },
-        {
-          Name: 'platform',
-          Values: ['Ubuntu'],
-        },
-      ],
-    }).then(([err, res]) => {
-      if (!err) {
-        setImageOptions(
-          res.ImageSet.map((image) => ({
-            label: image.ImageName,
-            value: image.ImageId,
-          })),
-        );
-      }
+      Filters,
     });
+    if (err) return;
+    if (res.TotalCount > 0) {
+      setImageOptions(
+        res.ImageSet.map((image) => ({
+          label: image.ImageName,
+          value: image.ImageId,
+        })),
+      );
+    } else {
+      setImageOptions([]);
+    }
+  };
+  useEffect(() => {
+    if (!region) return;
+    void loadImages(settings.imageType);
   }, [region]);
   const resetPwd = () => {
     form.setFieldValue('loginPwd', generateStrongPassword());
@@ -121,6 +125,23 @@ export const InstancePanel: FC<{
       </Form.Item>
       <Form.Item label='资源名' name='resourceName' required rules={[{ required: true }]}>
         <Input />
+      </Form.Item>
+      <Form.Item label='镜像类型' name='imageType' required rules={[{ required: true }]}>
+        <Select
+          onChange={(v) => {
+            void loadImages(v);
+          }}
+          options={[
+            {
+              label: '私有镜像',
+              value: 'PRIVATE_IMAGE',
+            },
+            {
+              label: '公共镜像',
+              value: 'PUBLIC_IMAGE',
+            },
+          ]}
+        />
       </Form.Item>
       <Form.Item label='镜像' name='imageId' required rules={[{ required: true }]}>
         <Select options={imageOptions} placeholder='选择镜像' />

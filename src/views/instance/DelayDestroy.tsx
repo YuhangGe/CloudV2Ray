@@ -1,5 +1,5 @@
 import { App, Button, InputNumber, Modal } from 'antd';
-import { useState, type FC } from 'react';
+import { type FC, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { globalStore } from '@/store/global';
 import { isNumber } from '@/service/util';

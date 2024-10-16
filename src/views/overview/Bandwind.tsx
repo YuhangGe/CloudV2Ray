@@ -1,5 +1,5 @@
 import { App, Button, InputNumber, Modal, Tag, Tooltip } from 'antd';
-import { useState, type FC } from 'react';
+import { type FC, useState } from 'react';
 import { globalStore } from '@/store/global';
 import { isNumber } from '@/service/util';
 import { ResetInstancesInternetMaxBandwidth } from '@/service/tencent';

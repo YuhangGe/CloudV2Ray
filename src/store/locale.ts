@@ -4,7 +4,7 @@ export type Locale = 'zh-cn' | 'zh-tr' | 'en';
 
 const LocaleKey = 'cloudv2ray.language';
 function getLocale(): Locale {
-  const lang = (localStorage.getItem(LocaleKey) || navigator.language || 'en')
+  const lang = (localStorage.getItem(LocaleKey) ?? navigator.language ?? 'en')
     .toLowerCase()
     .replace(/_/g, '-');
   if (lang === 'zh-cn') {

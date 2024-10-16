@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import { useEffect, useState, type FC } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import type { CVMBalance } from '@/service/tencent';
 import { DescribeAccountBalance } from '@/service/tencent';
 

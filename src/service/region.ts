@@ -15,4 +15,8 @@ export const RegionOptions = [
     value: 'eu-frankfurt',
     label: '法兰克福',
   },
+  {
+    value: 'na-ashburn',
+    label: '弗吉尼亚',
+  },
 ];

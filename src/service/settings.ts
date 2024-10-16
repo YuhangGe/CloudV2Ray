@@ -2,6 +2,7 @@ export interface Settings {
   resourceName: string;
   instanceType: string;
   imageId: string;
+  imageType: 'PUBLIC_IMAGE' | 'PRIVATE_IMAGE';
   zone: string;
   region: string;
   secretKey: string;
@@ -15,6 +16,7 @@ export const DefaultSettings: Settings = {
   instanceType: '',
   token: '',
   loginPwd: '',
+  imageType: 'PRIVATE_IMAGE',
   imageId: '',
   zone: '',
   resourceName: 'vray::proxy',

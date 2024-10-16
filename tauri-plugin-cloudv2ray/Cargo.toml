@@ -9,13 +9,13 @@ exclude = ["/webview-dist", "/webview-src", "/node_modules"]
 links = "tauri-plugin-cloudv2ray"
 
 [dependencies]
-tauri = { version = "2.0.0-beta" }
+tauri = { version = "2.0.4" }
 serde = "1.0"
 anyhow = "1"
 anyhow-tauri = "1"
 
 [target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]
-zip-extract = "0.1.3"
+zip-extract = "0.2.1"
 tokio = { version = "*", features = ["process", "macros"] }
 
 # tokio-util = "0.7"
@@ -26,4 +26,4 @@ tokio = { version = "*", features = ["process", "macros"] }
 # android_logger = "0.14"
 
 [build-dependencies]
-tauri-plugin = { version = "2.0.0-beta", features = ["build"] }
+tauri-plugin = { version = "2.0.1", features = ["build"] }

@@ -2,21 +2,19 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "enables the default permissions",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "cloudv2ray:default",
-    "path:default",
-    "event:default",
-    "window:default",
-    "webview:default",
-    "app:default",
-    "resources:default",
-    "image:default",
-    "menu:default",
-    "tray:default",
     {
       "identifier": "http:default",
-      "allow": ["https://*.tencentcloudapi.com", "http://*:2081"]
-    }
+      "allow": [
+        "https://*.tencentcloudapi.com",
+        "http://*:2081"
+      ]
+    },
+    "core:event:default",
+    "store:default"
   ]
 }

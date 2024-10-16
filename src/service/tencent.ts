@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { fetch } from '@tauri-apps/plugin-http';
 import { message } from './message';
-import { type InstanceDeps } from './instance';
+import type { InstanceDeps } from './instance';
 import { globalStore } from '@/store/global';
 
 export type ApiResult<T> = [Error] | [undefined, T];
@@ -43,13 +43,13 @@ async function callTencentApi<T>({
     'X-TC-Timestamp': timestamp.toString(),
     'X-TC-Region': region ?? params.region,
   };
-  const res = await fetch('https://' + host, {
+  const res = await fetch(`https://${host}`, {
     method: 'POST',
     headers,
     body,
   });
   if (res.status !== 200) {
-    throw new Error(`bad status code: ` + res.status);
+    throw new Error(`bad status code: ${res.status}`);
   }
   // console.log('start call api...');
   // const res = await invoke<string>('tauri_call_tencent_cloud_api', {
@@ -145,7 +145,10 @@ function getInstanceApiParams() {
     InstanceCount: 1,
     LoginSettings: { Password: settings.loginPwd },
     Placement: { Zone: settings.zone, ProjectId: 0 },
-    SystemDisk: { DiskSize: 20, DiskType: 'CLOUD_BSSD' },
+    SystemDisk: {
+      DiskSize: 20,
+      DiskType: 'CLOUD_PREMIUM', // 'CLOUD_BSSD'
+    },
     ImageId: settings.imageId,
     InstanceName: settings.resourceName,
     HostName: 'vray',

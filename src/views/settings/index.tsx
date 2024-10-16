@@ -1,5 +1,5 @@
 import { App, Button, ConfigProvider, Form, Input, Tabs, Tooltip } from 'antd';
-import { useEffect, useMemo, type FC } from 'react';
+import { type FC, useEffect, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Price } from '../overview/Price';
 import { InstancePanel } from './Instance';

@@ -1,6 +1,6 @@
 import { globalStore } from './global';
 import type { LoadingMessage } from '@/service/util';
-import { loadingMessage } from '@/service/util';
+import { IS_IN_MOBILE, loadingMessage } from '@/service/util';
 import { loadInstanceDependentResources } from '@/service/instance';
 import type { CVMInstance } from '@/service/tencent';
 import { CreateInstance } from '@/service/tencent';
@@ -20,6 +20,7 @@ export const createInstanceAndInstallV2Ray = async () => {
   const msg = loadingMessage('正在创建主机...');
 
   globalStore.set('v2rayState', 'INSTALLING');
+
   const deps = await loadInstanceDependentResources();
   if (!deps) return abort(msg);
   const [err, res] = await CreateInstance(deps);
@@ -28,9 +29,30 @@ export const createInstanceAndInstallV2Ray = async () => {
   msg.update('正在等待主机启动...');
   const instWithEip = await waitInstanceReady(res);
   globalStore.set('instance', instWithEip);
-  await installV2RayAgentOnInstance(instWithEip, msg);
+  if (globalStore.get('settings').imageType === 'PRIVATE_IMAGE') {
+    await installV2RayAgentOnInstance(instWithEip, msg);
+  } else {
+    msg.update('正在等待 v2ray 服务上线...');
+    await afterInstanceReady(msg);
+  }
 };
 
+async function afterInstanceReady(msg: LoadingMessage) {
+  if (IS_IN_MOBILE) {
+    msg.end('远程主机安装 V2Ray 完成！');
+  } else {
+    await pingV2RayInterval();
+    const r = await startV2RayCore();
+    if (!r) {
+      abort(msg);
+      void message.error('启动本地 v2ray core 失败，请尝试退出后重启 CloudV2Ray。');
+      return;
+    } else {
+      globalStore.set('v2rayState', 'INSTALLED');
+      msg.end('远程主机安装 V2Ray 完成，已启动本地 v2ray-core 代理！');
+    }
+  }
+}
 export const installV2RayAgentOnInstance = async (inst: CVMInstance, msg?: LoadingMessage) => {
   if (!msg) {
     msg = loadingMessage('正在等待远程主机自动化助手上线...');
@@ -45,14 +67,5 @@ export const installV2RayAgentOnInstance = async (inst: CVMInstance, msg?: Loadi
     void message.error('远程主机安装 v2ray 失败！请尝试重新安装。');
     return;
   }
-  await pingV2RayInterval();
-  const r = await startV2RayCore();
-  if (!r) {
-    abort(msg);
-    void message.error('启动本地 v2ray core 失败，请尝试退出后重启 CloudV2Ray。');
-    return;
-  } else {
-    globalStore.set('v2rayState', 'INSTALLED');
-    msg.end('远程主机安装 V2Ray 完成，已启动本地 v2ray-core 代理！');
-  }
+  await afterInstanceReady(msg);
 };

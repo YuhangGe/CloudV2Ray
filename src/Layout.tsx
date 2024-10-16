@@ -1,5 +1,5 @@
 import { App as AntApp, Button, Dropdown, Spin, Tooltip } from 'antd';
-import { Suspense, lazy, useEffect, useMemo, useState, type FC } from 'react';
+import { type FC, Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { IS_IN_MOBILE, cs, useQuery } from './service/util';
 import { globalStore } from './store/global';

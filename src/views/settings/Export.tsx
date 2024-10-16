@@ -1,6 +1,6 @@
 import { App, Button, Modal, Tag, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { useMemo, useState, type FC } from 'react';
+import { type FC, useMemo, useState } from 'react';
 import { getInstanceAgentShell } from '@/service/instance';
 import { copyToClipboard } from '@/service/util';
 

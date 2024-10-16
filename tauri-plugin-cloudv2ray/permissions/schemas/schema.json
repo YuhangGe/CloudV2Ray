@@ -49,7 +49,7 @@
           "minimum": 1.0
         },
         "description": {
-          "description": "Human-readable description of what the permission does.",
+          "description": "Human-readable description of what the permission does. Tauri convention is to use <h4> headings in markdown content for Tauri documentation generation purposes.",
           "type": [
             "string",
             "null"
@@ -111,7 +111,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Human-readable description of what the permission does.",
+          "description": "Human-readable description of what the permission does. Tauri internal convention is to use <h4> headings in markdown content for Tauri documentation generation purposes.",
           "type": [
             "string",
             "null"
@@ -172,7 +172,7 @@
       }
     },
     "Scopes": {
-      "description": "A restriction of the command/endpoint functionality.\n\nIt can be of any serde serializable type and is used for allowing or preventing certain actions inside a Tauri command.\n\nThe scope is passed to the command and handled/enforced by the command itself.",
+      "description": "An argument for fine grained behavior control of Tauri commands.\n\nIt can be of any serde serializable type and is used to allow or prevent certain actions inside a Tauri command. The configured scope is passed to the command and will be enforced by the command implementation.\n\n## Example\n\n```json { \"allow\": [{ \"path\": \"$HOME/**\" }], \"deny\": [{ \"path\": \"$HOME/secret.txt\" }] } ```",
       "type": "object",
       "properties": {
         "allow": {
@@ -186,7 +186,7 @@
           }
         },
         "deny": {
-          "description": "Data that defines what is denied by the scope.",
+          "description": "Data that defines what is denied by the scope. This should be prioritized by validation logic.",
           "type": [
             "array",
             "null"
@@ -295,221 +295,159 @@
       "type": "string",
       "oneOf": [
         {
-          "description": "allow-execute -> Enables the execute command without any pre-configured scope.",
+          "description": "Enables the execute command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-execute"
-          ]
+          "const": "allow-execute"
         },
         {
-          "description": "deny-execute -> Denies the execute command without any pre-configured scope.",
+          "description": "Denies the execute command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-execute"
-          ]
+          "const": "deny-execute"
         },
         {
-          "description": "allow-getMobileDir -> Enables the getMobileDir command without any pre-configured scope.",
+          "description": "Enables the getMobileDir command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-getMobileDir"
-          ]
+          "const": "allow-getMobileDir"
         },
         {
-          "description": "deny-getMobileDir -> Denies the getMobileDir command without any pre-configured scope.",
+          "description": "Denies the getMobileDir command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-getMobileDir"
-          ]
+          "const": "deny-getMobileDir"
         },
         {
-          "description": "allow-ping -> Enables the ping command without any pre-configured scope.",
+          "description": "Enables the ping command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-ping"
-          ]
+          "const": "allow-ping"
         },
         {
-          "description": "deny-ping -> Denies the ping command without any pre-configured scope.",
+          "description": "Denies the ping command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-ping"
-          ]
+          "const": "deny-ping"
         },
         {
-          "description": "allow-register-listener -> Enables the register_listener command without any pre-configured scope.",
+          "description": "Enables the register_listener command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-register-listener"
-          ]
+          "const": "allow-register-listener"
         },
         {
-          "description": "deny-register-listener -> Denies the register_listener command without any pre-configured scope.",
+          "description": "Denies the register_listener command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-register-listener"
-          ]
+          "const": "deny-register-listener"
         },
         {
-          "description": "allow-remove-listener -> Enables the remove_listener command without any pre-configured scope.",
+          "description": "Enables the remove_listener command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-remove-listener"
-          ]
+          "const": "allow-remove-listener"
         },
         {
-          "description": "deny-remove-listener -> Denies the remove_listener command without any pre-configured scope.",
+          "description": "Denies the remove_listener command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-remove-listener"
-          ]
+          "const": "deny-remove-listener"
         },
         {
-          "description": "allow-runV2RayCore -> Enables the runV2RayCore command without any pre-configured scope.",
+          "description": "Enables the runV2RayCore command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-runV2RayCore"
-          ]
+          "const": "allow-runV2RayCore"
         },
         {
-          "description": "deny-runV2RayCore -> Denies the runV2RayCore command without any pre-configured scope.",
+          "description": "Denies the runV2RayCore command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-runV2RayCore"
-          ]
+          "const": "deny-runV2RayCore"
         },
         {
-          "description": "allow-startV2RayCore -> Enables the startV2RayCore command without any pre-configured scope.",
+          "description": "Enables the startV2RayCore command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-startV2RayCore"
-          ]
+          "const": "allow-startV2RayCore"
         },
         {
-          "description": "deny-startV2RayCore -> Denies the startV2RayCore command without any pre-configured scope.",
+          "description": "Denies the startV2RayCore command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-startV2RayCore"
-          ]
+          "const": "deny-startV2RayCore"
         },
         {
-          "description": "allow-startVpn -> Enables the startVpn command without any pre-configured scope.",
+          "description": "Enables the startVpn command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-startVpn"
-          ]
+          "const": "allow-startVpn"
         },
         {
-          "description": "deny-startVpn -> Denies the startVpn command without any pre-configured scope.",
+          "description": "Denies the startVpn command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-startVpn"
-          ]
+          "const": "deny-startVpn"
         },
         {
-          "description": "allow-stopV2RayCore -> Enables the stopV2RayCore command without any pre-configured scope.",
+          "description": "Enables the stopV2RayCore command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-stopV2RayCore"
-          ]
+          "const": "allow-stopV2RayCore"
         },
         {
-          "description": "deny-stopV2RayCore -> Denies the stopV2RayCore command without any pre-configured scope.",
+          "description": "Denies the stopV2RayCore command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-stopV2RayCore"
-          ]
+          "const": "deny-stopV2RayCore"
         },
         {
-          "description": "allow-stopVpn -> Enables the stopVpn command without any pre-configured scope.",
+          "description": "Enables the stopVpn command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-stopVpn"
-          ]
+          "const": "allow-stopVpn"
         },
         {
-          "description": "deny-stopVpn -> Denies the stopVpn command without any pre-configured scope.",
+          "description": "Denies the stopVpn command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-stopVpn"
-          ]
+          "const": "deny-stopVpn"
         },
         {
-          "description": "allow-tauri-start-tun2socks-server -> Enables the tauri_start_tun2socks_server command without any pre-configured scope.",
+          "description": "Enables the tauri_start_tun2socks_server command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-tauri-start-tun2socks-server"
-          ]
+          "const": "allow-tauri-start-tun2socks-server"
         },
         {
-          "description": "deny-tauri-start-tun2socks-server -> Denies the tauri_start_tun2socks_server command without any pre-configured scope.",
+          "description": "Denies the tauri_start_tun2socks_server command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-tauri-start-tun2socks-server"
-          ]
+          "const": "deny-tauri-start-tun2socks-server"
         },
         {
-          "description": "allow-tauri-start-v2ray-server -> Enables the tauri_start_v2ray_server command without any pre-configured scope.",
+          "description": "Enables the tauri_start_v2ray_server command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-tauri-start-v2ray-server"
-          ]
+          "const": "allow-tauri-start-v2ray-server"
         },
         {
-          "description": "deny-tauri-start-v2ray-server -> Denies the tauri_start_v2ray_server command without any pre-configured scope.",
+          "description": "Denies the tauri_start_v2ray_server command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-tauri-start-v2ray-server"
-          ]
+          "const": "deny-tauri-start-v2ray-server"
         },
         {
-          "description": "allow-tauri-stop-tun2socks-server -> Enables the tauri_stop_tun2socks_server command without any pre-configured scope.",
+          "description": "Enables the tauri_stop_tun2socks_server command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-tauri-stop-tun2socks-server"
-          ]
+          "const": "allow-tauri-stop-tun2socks-server"
         },
         {
-          "description": "deny-tauri-stop-tun2socks-server -> Denies the tauri_stop_tun2socks_server command without any pre-configured scope.",
+          "description": "Denies the tauri_stop_tun2socks_server command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-tauri-stop-tun2socks-server"
-          ]
+          "const": "deny-tauri-stop-tun2socks-server"
         },
         {
-          "description": "allow-tauri-stop-v2ray-server -> Enables the tauri_stop_v2ray_server command without any pre-configured scope.",
+          "description": "Enables the tauri_stop_v2ray_server command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-tauri-stop-v2ray-server"
-          ]
+          "const": "allow-tauri-stop-v2ray-server"
         },
         {
-          "description": "deny-tauri-stop-v2ray-server -> Denies the tauri_stop_v2ray_server command without any pre-configured scope.",
+          "description": "Denies the tauri_stop_v2ray_server command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-tauri-stop-v2ray-server"
-          ]
+          "const": "deny-tauri-stop-v2ray-server"
         },
         {
-          "description": "allow-test -> Enables the test command without any pre-configured scope.",
+          "description": "Enables the test command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-test"
-          ]
+          "const": "allow-test"
         },
         {
-          "description": "deny-test -> Denies the test command without any pre-configured scope.",
+          "description": "Denies the test command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-test"
-          ]
+          "const": "deny-test"
         },
         {
-          "description": "default -> Allows all commands",
+          "description": "Allows all commands",
           "type": "string",
-          "enum": [
-            "default"
-          ]
+          "const": "default"
         }
       ]
     }

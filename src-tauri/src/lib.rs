@@ -65,6 +65,7 @@ fn open_window(app: &AppHandle) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   let app = tauri::Builder::default()
+    .plugin(tauri_plugin_store::Builder::new().build())
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_cloudv2ray::init())
     // .plugin(tauri_plugin_dialog::init())

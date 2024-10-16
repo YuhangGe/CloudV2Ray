@@ -16,7 +16,7 @@ export async function enableV2RaySocks(inst: CVMInstance, enabled: boolean) {
     const url = `http://${ip}:2081/socks?token=${settings.token}&enable=${enabled ? 'true' : 'false'}`;
     appendLog(`[socks] ==> ${url}`);
     const res = await fetch(url);
-    if (res.status !== 200) throw new Error(`bad response status: ` + res.status);
+    if (res.status !== 200) throw new Error(`bad response status: ${res.status}`);
     const txt = await res.text();
     return txt === 'ok!';
   } catch (ex) {

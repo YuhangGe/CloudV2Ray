@@ -1,4 +1,4 @@
-import { useEffect, useRef, type FC } from 'react';
+import { type FC, useEffect, useRef } from 'react';
 import { logStore } from '@/store/log';
 
 const LogView: FC = () => {

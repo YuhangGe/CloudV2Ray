@@ -1,5 +1,5 @@
 import { Button, Popconfirm } from 'antd';
-import { useState, type FC } from 'react';
+import { type FC, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { DelayDestroy } from './DelayDestroy';
 import { TerminateInstance } from '@/service/tencent';

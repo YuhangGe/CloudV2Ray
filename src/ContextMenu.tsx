@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { Dropdown } from 'antd';
-import type { ReactNode, FC } from 'react';
+import type { FC, ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 

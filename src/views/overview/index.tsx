@@ -1,5 +1,5 @@
-import { useMemo, type FC } from 'react';
-import { Button, Popover, Tag, QRCode, App } from 'antd';
+import { type FC, useMemo } from 'react';
+import { App, Button, Popover, QRCode, Tag } from 'antd';
 import { Balance } from './Balance';
 import { Bandwidth } from './Bandwind';
 import { Price } from './Price';
@@ -81,7 +81,7 @@ const OverviewView: FC = () => {
       </div>
       {!IS_IN_MOBILE && (
         <div className='flex'>
-          <span className='mr-2 whitespace-nowrap pt-2'>本地代理：</span>
+          <span className='mr-2 whitespace-nowrap pt-1'>本地代理：</span>
           <div className='flex-shrink basis-56'>
             <Tag
               className='mr-0 w-full overflow-x-auto font-mono'

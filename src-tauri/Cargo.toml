@@ -14,31 +14,28 @@ name = "cloudv2ray_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-beta", features = [] }
+tauri-build = { version = "2.0.1", features = [] }
 
 [dependencies]
 tauri-plugin-cloudv2ray = { path = "../tauri-plugin-cloudv2ray" }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "2.0.0-beta", features = [
-    "tray-icon",
-    "devtools",
-    "image-png",
-] }
-tauri-plugin-http = "2.0.0-beta"
+tauri = { version = "2.0.4", features = ["tray-icon", "devtools", "image-png"] }
+tauri-plugin-http = "2.0.1"
 anyhow = "1"
 anyhow-tauri = "1"
 sha2 = "0.10"
 chrono = "0.4"
 hmac = "0.12"
-uuid = { version = "1.8", features = ["v4"] }
+uuid = { version = "1.10", features = ["v4"] }
+tauri-plugin-store = "2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 interfaces = "0.0.9"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 winreg = { version = "0.52", features = ["transactions"] }
-windows = { version = "0.57", features = [
+windows = { version = "0.58", features = [
     "Win32_Networking_WinInet",
     "Win32_NetworkManagement_Rras",
     "Win32_Foundation",
