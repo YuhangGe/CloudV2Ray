@@ -1,12 +1,12 @@
 import { createStore } from 'lrhs';
 import { DefaultSettings, type Settings } from '@/service/settings';
 import type { CVMInstance } from '@/service/tencent';
-import { createStore as createTauriStore } from '@tauri-apps/plugin-store';
+import { load } from '@tauri-apps/plugin-store';
 // when using `"withGlobalTauri": true`, you may use
 // const { createStore } = window.__TAURI__.store;
 
 // create a new store or load the existing one
-const tauriStore = await createTauriStore('store.bin', {
+const tauriStore = await load('store.bin', {
   // we can save automatically after each store modification
   // autoSave: true,
 });

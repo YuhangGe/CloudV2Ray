@@ -52,7 +52,8 @@
             ]
           }
         ]
-      }
+      },
+      "tag": "proxy"
     },
     {
       "protocol": "freedom",
@@ -72,6 +73,11 @@
         "domain": ["tanx.com", "googeadsserving.cn", "baidu.com"],
         "type": "field",
         "outboundTag": "adblock"
+      },
+      {
+        "domain": ["tiktok.com"],
+        "type": "field",
+        "outboundTag": "proxy"
       },
       {
         "domain": ["amazon.com", "microsoft.com", "jd.com", "youku.com", "baidu.com"],

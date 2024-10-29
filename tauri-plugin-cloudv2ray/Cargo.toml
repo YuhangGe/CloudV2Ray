@@ -9,8 +9,8 @@ exclude = ["/webview-dist", "/webview-src", "/node_modules"]
 links = "tauri-plugin-cloudv2ray"
 
 [dependencies]
-tauri = { version = "2.0.4" }
-serde = "1.0"
+tauri = { version = "2" }
+serde = "1"
 anyhow = "1"
 anyhow-tauri = "1"
 
