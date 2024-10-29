@@ -7,6 +7,7 @@ import { CreateInstance } from '@/service/tencent';
 import {
   installV2RayAgent,
   pingV2RayInterval,
+  pingV2RayOnce,
   startV2RayCore,
   waitInstanceAutomationAgentReady,
   waitInstanceReady,
@@ -33,15 +34,23 @@ export const createInstanceAndInstallV2Ray = async () => {
     await installV2RayAgentOnInstance(instWithEip, msg);
   } else {
     msg.update('正在等待 v2ray 服务上线...');
+    for (let i = 0; i < 150; i++) {
+      await new Promise((res) => setTimeout(res, 2000));
+      const pinged = await pingV2RayOnce(instWithEip);
+      if (pinged) {
+        return true;
+      }
+    }
     await afterInstanceReady(msg);
   }
 };
 
 async function afterInstanceReady(msg: LoadingMessage) {
+  pingV2RayInterval();
+
   if (IS_IN_MOBILE) {
     msg.end('远程主机安装 V2Ray 完成！');
   } else {
-    await pingV2RayInterval();
     const r = await startV2RayCore();
     if (!r) {
       abort(msg);

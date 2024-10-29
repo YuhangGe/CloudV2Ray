@@ -69,7 +69,7 @@ export const Layout: FC = () => {
       }
       globalStore.set('v2rayState', 'INSTALLED');
       appendLog('[ping] ==> 开始定时 Ping 服务');
-      if (!(await pingV2RayInterval())) {
+      if (!(pingV2RayInterval())) {
         void message.error('pingV2RayInterval 失败，请尝试退出后重启 CloudV2Ray。');
         return;
       }

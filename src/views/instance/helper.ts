@@ -138,7 +138,7 @@ export async function pingV2RayOnce(inst: CVMInstance) {
 }
 
 let pingInt = 0;
-export async function pingV2RayInterval() {
+export function pingV2RayInterval() {
   const settings = globalStore.get('settings');
   if (!settings.token) return false;
   const inst = globalStore.get('instance');
