@@ -24,3 +24,24 @@ export const DefaultSettings: Settings = {
   secretKey: import.meta.env.VITE_SECRET_KEY ?? '',
   secretId: import.meta.env.VITE_SECRET_ID ?? '',
 };
+
+export function validateSettings(s: Settings) {
+  if (!s.secretKey || !s.secretId || !s.token) {
+    return '请先配置密钥参数';
+  }
+  if (!s.imageId) {
+    return '请先选择镜像';
+  }
+  if (
+    Object.keys(s).some((k) => {
+      if (!s[k as keyof Settings]) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+  ) {
+    return '请完成全部主机参数配置';
+  }
+  return null;
+}

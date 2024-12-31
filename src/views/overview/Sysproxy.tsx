@@ -4,14 +4,14 @@ import { App, Switch } from 'antd';
 import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { getV2RayCoreConf } from '../instance/helper';
-import { IS_IN_MOBILE } from '@/service/util';
+import { IS_MOBILE } from '@/service/util';
 import tun2socksConf from '@/assets/tun2socks.conf.template.yaml?raw';
 
 export const Sysproxy: FC = () => {
   const { message } = App.useApp();
   const [toggling, setToggling] = useState(false);
   const [sysproxy, setSysprox] = useState(false);
-  const lis = useRef<PluginListener>();
+  const lis = useRef<PluginListener>(null);
   // type Arg = {
   //   vpnFd: number;
   // };
@@ -71,7 +71,7 @@ export const Sysproxy: FC = () => {
     }
   };
   useEffect(() => {
-    !IS_IN_MOBILE &&
+    !IS_MOBILE &&
       invoke<boolean>('tauri_is_sysproxy_enabled', { port: 7890 }).then(
         (v) => {
           setSysprox(v);
@@ -91,7 +91,7 @@ export const Sysproxy: FC = () => {
         loading={toggling}
         value={sysproxy}
         onChange={(v) => {
-          if (IS_IN_MOBILE) {
+          if (IS_MOBILE) {
             void toggleMobileVpn(v);
           } else {
             void toggleSysproxy(v);

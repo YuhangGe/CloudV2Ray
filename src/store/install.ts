@@ -1,6 +1,6 @@
 import { globalStore } from './global';
 import type { LoadingMessage } from '@/service/util';
-import { IS_IN_MOBILE, loadingMessage } from '@/service/util';
+import { IS_MOBILE, loadingMessage } from '@/service/util';
 import { loadInstanceDependentResources } from '@/service/instance';
 import type { CVMInstance } from '@/service/tencent';
 import { CreateInstance } from '@/service/tencent';
@@ -48,7 +48,7 @@ export const createInstanceAndInstallV2Ray = async () => {
 async function afterInstanceReady(msg: LoadingMessage) {
   pingV2RayInterval();
 
-  if (IS_IN_MOBILE) {
+  if (IS_MOBILE) {
     msg.end('远程主机安装 V2Ray 完成！');
   } else {
     const r = await startV2RayCore();

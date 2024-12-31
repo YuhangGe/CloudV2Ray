@@ -1,7 +1,6 @@
 import { Button, Popconfirm } from 'antd';
 import { type FC, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { DelayDestroy } from './DelayDestroy';
 import { TerminateInstance } from '@/service/tencent';
 import { globalStore } from '@/store/global';
 import { createInstanceAndInstallV2Ray, installV2RayAgentOnInstance } from '@/store/install';
@@ -9,7 +8,7 @@ import { createInstanceAndInstallV2Ray, installV2RayAgentOnInstance } from '@/st
 export const Control: FC = () => {
   const [inst, setInst] = globalStore.useStore('instance');
   const [v2rayState] = globalStore.useStore('v2rayState');
-
+  const [settings] = globalStore.useStore('settings');
   const [destroing, setDestroing] = useState(false);
   const doDestroy = async () => {
     if (!inst) return;
@@ -37,7 +36,7 @@ export const Control: FC = () => {
           创建主机
         </Button>
       )}
-      {inst && inst.InstanceState === 'RUNNING' && (
+      {settings.imageType !== 'PRIVATE_IMAGE' && inst && inst.InstanceState === 'RUNNING' && (
         <Button
           loading={v2rayState === 'INSTALLING'}
           onClick={() => {
@@ -52,7 +51,7 @@ export const Control: FC = () => {
           {v2rayState === 'INSTALLED' ? '重新' : ''}安装 V2Ray
         </Button>
       )}
-      {v2rayState === 'INSTALLED' && <DelayDestroy />}
+      {/* {v2rayState === 'INSTALLED' && <DelayDestroy />} */}
 
       {!!inst && (
         <Popconfirm

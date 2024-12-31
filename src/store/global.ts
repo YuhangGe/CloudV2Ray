@@ -34,7 +34,7 @@ export async function loadGlobalSettings() {
 
 ['settings'].forEach((prop) => {
   globalStore.hook(prop as keyof GlobalStore, (v) => {
-    void tauriStore.set(`cloudv2ray.${prop}`, JSON.stringify(v)).then(() => {
+    void tauriStore.set(prop, JSON.stringify(v)).then(() => {
       return tauriStore.save();
     });
   });

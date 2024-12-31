@@ -3,14 +3,17 @@ import { type FC, useEffect, useState } from 'react';
 import type { CVMPrice } from '@/service/tencent';
 import { InquiryPriceRunInstances } from '@/service/tencent';
 import { globalStore } from '@/store/global';
+import { validateSettings } from '@/service/settings';
 
 export const Price: FC = () => {
   const [price, setPrice] = useState<CVMPrice>();
   const [settings] = globalStore.useStore('settings');
   const [loading, setLoading] = useState(false);
   const loadPrice = async () => {
+    if (validateSettings(settings) != null) {
+      return;
+    }
     setLoading(true);
-
     const [err, res] = await InquiryPriceRunInstances();
     setLoading(false);
     if (!err) {
@@ -19,7 +22,7 @@ export const Price: FC = () => {
   };
   useEffect(() => {
     void loadPrice();
-  }, [settings.instanceType]);
+  }, [settings.instanceType, settings.imageId]);
 
   return (
     <div className='flex items-center gap-2'>

@@ -13,6 +13,7 @@ import {
   startV2RayCore,
 } from './views/instance/helper';
 import imgLogo from '@/assets/logo-128x128.png';
+import { validateSettings } from './service/settings';
 
 const InstanceView = lazy(() => import('./views/instance'));
 const SettingsView = lazy(() => import('./views/settings'));
@@ -49,7 +50,7 @@ export const Layout: FC = () => {
 
   const [view, setView] = useQuery(
     'view',
-    settings.secretKey && settings.instanceType ? 'overview' : 'settings',
+    validateSettings(settings) != null ? 'settings' : 'overview',
   );
   const title = useMemo(() => {
     return ViewItems.find((it) => it.key === view)?.label;
@@ -87,7 +88,7 @@ export const Layout: FC = () => {
   };
   useEffect(() => {
     const settings = globalStore.get('settings');
-    if (!settings.secretKey || !settings.instanceType) {
+    if (validateSettings(settings) != null) {
       setLoaded(true);
       return;
     }
@@ -106,12 +107,9 @@ export const Layout: FC = () => {
           <div
             key={item.key}
             onClick={() => {
-              if (!settings.secretKey) {
-                void message.error('请先配置密钥参数');
-                return;
-              }
-              if (!settings.instanceType) {
-                void message.error('请先配置主机参数');
+              const err = validateSettings(settings);
+              if (err != null) {
+                void message.error(err);
                 return;
               }
               setView(item.key);

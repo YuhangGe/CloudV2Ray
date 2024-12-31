@@ -87,6 +87,13 @@ export const InstancePanel: FC<{
           value: image.ImageId,
         })),
       );
+      if (settings.imageType === 'PRIVATE_IMAGE' && settings.token) {
+        // 私有镜像约定使用 vmess uuid 作为镜像名。如果找到了，则填充 image id。
+        const img = res.ImageSet.find((ii) => ii.ImageName == settings.token);
+        if (img && settings.imageId !== img.ImageId) {
+          form.setFieldValue('imageId', img.ImageId);
+        }
+      }
     } else {
       setImageOptions([]);
     }
