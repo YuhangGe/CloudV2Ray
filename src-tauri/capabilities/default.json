@@ -1,0 +1,23 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:event:default",
+    "core:default",
+    "store:default",
+    "notification:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        "https://*.tencentcloudapi.com",
+        "http://*:2081"
+      ]
+    },
+    "os:default",
+    "clipboard-manager:default"
+  ]
+}

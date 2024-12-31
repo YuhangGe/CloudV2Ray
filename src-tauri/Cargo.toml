@@ -1,0 +1,39 @@
+[package]
+name = "cloudv2ray"
+version = "0.1.0"
+description = "Cloud-based V2Ray GUI Client"
+authors = ["abeyuhang@gmail.com"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/YuhangGe/CloudV2Ray"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "cloudv2ray_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "devtools", "image-png"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+anyhow-tauri = "1"
+sha2 = "0.10"
+chrono = "0.4"
+hmac = "0.12"
+uuid = { version = "1.11", features = ["v4"] }
+tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
+tauri-plugin-store = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-os = "2"
+tauri-plugin-clipboard-manager = "2.2.0"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2"

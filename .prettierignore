@@ -1,0 +1,9 @@
+node_modules
+dist
+env
+/deps/
+.gitignore
+pnpm-lock.yaml
+README.md
+src-tauri/
+tauri-plugin-cloudv2ray/
